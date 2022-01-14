@@ -1,0 +1,26 @@
+{
+  "devDependencies": {
+    "nodemon": "^2.0.15",
+    "prisma": "^3.8.1"
+  },
+  "dependencies": {
+    "@prisma/client": "3.8.1",
+    "express": "^4.17.2"
+  },
+  "name": "rate-app-server",
+  "version": "1.0.0",
+  "description": "server for rate app",
+  "main": "index.js",
+  "repository": "tba",
+  "author": "Adebayo Ajayi <braggedtooth@gmail.com>",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "dev" : "yarn nodemon index.js",
+    "migrate": "yarn prisma db migrate --preview-feature",
+    "seed": "yarn prisma db seed --preview-feature"
+  },
+  "prisma": {
+    "seed": "node prisma/seed.js"
+  }
+}
