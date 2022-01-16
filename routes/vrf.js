@@ -1,3 +1,4 @@
+const { StatusCodes } = require("http-status-codes")
 
 const permissions = {
   READ: 'read',
@@ -8,7 +9,7 @@ const permissions = {
   UPDATE_REVIEWS: 'UReviews',
   PUBLISH_REVIEWS: 'PReviews'
 }
-app.get('/g', async (req, res) => {
+app.get('/giveperms', async (req, res) => {
   const { userId } = req.query
   const user = await prisma.user.findFirst({ where: { id: userId } })
   if (user.verified) {
@@ -25,20 +26,29 @@ app.get('/g', async (req, res) => {
 })
 
 app.get('/verify', async (req, res) => {
-  const { userId } = req.query
-  await prisma.user.update({
+  const { code } = req.query
+ const verify =  await db.verification.findfirst({
     where: {
-      id: { userId }
+      code: { code }
     },
-    data: {
-      verified: true
-    }
+    
   })
+    if(!verify) return res.status(StatusCodes.BAD_REQUEST).json({error: 'Wrong code'})
+  
+    const user = await db.user.findFirst({
+      where:{
+        id:{ verify.userId}
+      },
+      data: {
+          verified: true
+        }
+      })
 
   res.status(200).send('you have been verified')
 }
 )
-app.get('/verify/name', async (req, res) => {
+
+/* app.get('/verify/name', async (req, res) => {
   const { firstname, lastname, userId } = req.body
   if (!firstname || !lastname | !userId) return res.json({ sucess: fale, message: 'please add all required fields' })
   await prisma.user.update({
@@ -54,3 +64,4 @@ app.get('/verify/name', async (req, res) => {
   res.status(200).send('you have been verified')
 }
 )
+ */

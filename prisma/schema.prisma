@@ -12,18 +12,19 @@ datasource db {
 }
 
 model User {
-  id          String        @id @default(dbgenerated()) @map("_id") @db.ObjectId
-  firstname   String
-  lastname    String
-  email       String        @unique
-  password    String
-  role        Roles         @default(USER)
-  verified    Boolean       @default(false)
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
-  reviews     Review[]
-  comments    Comment[]
-  permissions Permissions[]
+  id              String       @id @default(dbgenerated()) @map("_id") @db.ObjectId
+  firstname       String
+  lastname        String
+  email           String       @unique
+  password        String
+  role            Roles        @default(USER)
+  verified        Boolean      @default(false)
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+  reviews         Review[]
+  comments        Comment[]
+  Permissions     Permissions? @relation(fields: [permissionsName], references: [name])
+  permissionsName String?
 }
 
 //user can read write,
@@ -54,8 +55,8 @@ enum Roles {
 }
 
 model Permissions {
-  id     String   @id @default(dbgenerated()) @map("_id") @db.ObjectId
-  permit String[]
-  User   User?    @relation(fields: [userId], references: [id])
-  userId String?  @db.ObjectId
+  id      String   @id @default(dbgenerated()) @map("_id") @db.ObjectId
+  permits String[]
+  name    String?  @default("READ")
+  Users   User[]
 }

@@ -1,0 +1,9 @@
+ {
+  "READ": "read",
+ "WRITE_REVIEWS": "Wrewiews",
+ "WRITE_COMMENTS": "Wcomments",
+ "DELETE_COMMENTS": "Dcomments",
+ "DELETE_REVIEWS": "Dreviews",
+ "UPDATE_REVIEWS": "UReviews",
+ "PUBLISH_REVIEWS": "PReviews"
+}

@@ -6,7 +6,7 @@ const validator = require('../middleware/validator')
 const requireAuth = passport.authenticate('jwt', { session: false })
 const { Login, Signup } = require('../middleware/validationSchemas')
 const loginMidware = login
-
+const adminRoutes = require('./user.routes')
 module.exports = function (app) {
   app.get('/', function (req, res) {
     res.send('ESRA SERVER')
@@ -23,6 +23,6 @@ module.exports = function (app) {
     }
 
   )
-
+  app.use('/admin', requireAuth, adminRoutes)
   app.post('/signup', validator(Signup, 'body'), Authentication.signup)
 }

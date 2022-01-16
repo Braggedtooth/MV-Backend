@@ -1,11 +1,10 @@
-const { isAsync } = require('zod');
-const ApiError = require('../errorConstructor')
-
-exports.isAdmin() {
-  return async (res, req, next)
-  if (req.isAuthenticated()) {
-    next(res);
+/* const { StatusCodes } = require('http-status-codes')
+const isAdmin = async (res, req, next) => {
+  if (res.user.role === 'ADMIN') {
+    console.log('user is admin')
+    next()
   } else {
-    throw new ApiError(401, "Unauthorized")
+    return next('You do not have the permmision to do that')
   }
 }
+module.exports = isAdmin */

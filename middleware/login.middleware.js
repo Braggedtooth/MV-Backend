@@ -3,7 +3,6 @@ const { StatusCodes, getReasonPhrase } = require('http-status-codes')
 const db = require('../db')
 exports.login = () => {
   return async (req, res, next) => {
-    console.log(req.body)
     try {
       const { email, password } = req.body
       const User = await db.user.findUnique({

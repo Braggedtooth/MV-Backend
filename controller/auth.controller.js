@@ -1,5 +1,7 @@
 const db = require('../db')
 const generateToken = require('../utils/generateToken')
+/* const permissions = require('../utils/permissions') */
+
 exports.signin = async (req, res) => {
   const expires = parseInt(process.env.JWT_EXPIRATION_MS)
   /** generate a signed json web token and return it in the response */
@@ -47,6 +49,12 @@ exports.signup = async (req, res, next) => {
       lastname
     }
   })
+  /* await db.permissions.create({
+    data: {
+      permit: [permissions.READ],
+      userId: user.id
+    }
+  }) */
 
   return res.json({ message: 'Account Succesfully Created' })
 }

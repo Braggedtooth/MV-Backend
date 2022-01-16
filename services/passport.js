@@ -2,18 +2,22 @@ const passport = require('passport')
 const JwtStrategy = require('passport-jwt').Strategy
 const { secret } = require('../config')
 const db = require('../db')
-const { StatusCodes, getReasonPhrase } = require('http-status-codes')
-
-
+const { StatusCodes } = require('http-status-codes')
 
 /**
  * @description extracts cookies from request
  * @param {*} req
  * @returns token
  */
-const cookieExtractor = (req) => {
+
+const cookieExtractor = function (req) {
   let token = null
-  if (req && req.cookies) token = req.cookies.jwt
+  if (req && req.signedCookies && req.signedCookies.jwt) {
+    token = req.signedCookies.jwt
+  } else {
+    if (req && req.cookies) token = req.cookies.jwt
+  }
+
   return token
 }
 
@@ -26,11 +30,11 @@ const jwtLogin = new JwtStrategy({
   if (Date.now() > jwtPayload.expires) {
     return done(StatusCodes.UNAUTHORIZED, null, 'Token expired')
   }
-  console.log(jwtPayload)
   const user = await db.user.findUnique({
     where: {
       id: jwtPayload.sub
-    }
+    },
+    select: { id: true, role: true, verified: true, email: true }
   })
   if (user) {
     done(null, user, StatusCodes.OK)
