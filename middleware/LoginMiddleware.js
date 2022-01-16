@@ -3,7 +3,6 @@ const { StatusCodes, getReasonPhrase } = require('http-status-codes')
 const db = require('../db')
 const jwt = require('jsonwebtoken')
 const { secret } = require('../config')
-const { signedCookie } = require('cookie-parser')
 
 exports.login = async (req, res) => {
   try {
@@ -20,7 +19,9 @@ exports.login = async (req, res) => {
         message: 'enter a valid email and password combination',
         error: getReasonPhrase(401)
       })
-    }
+    } 
+
+    
     const correctPassword = await comparePasswords(password, User.password)
    
     if (correctPassword) {

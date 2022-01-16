@@ -18,7 +18,8 @@
     "passport": "^0.5.2",
     "passport-jwt": "^4.0.0",
     "passport-local": "^1.0.0",
-    "prisma": "^3.8.1"
+    "prisma": "^3.8.1",
+    "zod": "^3.11.6"
   },
   "name": "rate-app-server",
   "version": "1.0.0",
@@ -36,7 +37,6 @@
   "prisma": {
     "seed": "node prisma/seed.js"
   },
-
   "standard": {
     "parser": "@babel/eslint-parser"
   }
