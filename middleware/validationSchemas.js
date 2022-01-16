@@ -1,4 +1,4 @@
-const {z} = require("zod")
+const { z } = require('zod')
 const email = z
   .string()
   .email()
@@ -17,41 +17,39 @@ const Signup = z.object({
   email,
   password,
   firstname,
-  lastname,
+  lastname
 })
-
-
 
 const Login = z.object({
   email,
-  password: z.string(),
+  password: z.string()
 })
 
 const ForgotPassword = z.object({
-  email,
+  email
 })
 
 const ResetPassword = z
   .object({
     password: password,
     passwordConfirmation: password,
-    token: z.string(),
+    token: z.string()
   })
   .refine((data) => data.password === data.passwordConfirmation, {
     message: "Passwords don't match",
-    path: ["passwordConfirmation"], // set the path of the error
+    path: ['passwordConfirmation'] // set the path of the error
   })
 
 const ChangePassword = z.object({
   currentPassword: z.string(),
-  newPassword: password,
+  newPassword: password
 })
 
-module.exports= { 
- Signup,
- Login,
- ForgotPassword,
- ResetPassword,
- ChangePassword
- 
+module.exports = {
+  Signup,
+  Login,
+  ForgotPassword,
+  ResetPassword,
+  ChangePassword
+
 }

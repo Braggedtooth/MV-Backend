@@ -1,78 +1,42 @@
 const passport = require('passport')
 const JwtStrategy = require('passport-jwt').Strategy
-const { ExtractJwt } = require('passport-jwt')
-const LocalStrategy = require('passport-local')
 const { secret } = require('../config')
 const db = require('../db')
-const { comparePasswords } = require('../utils/password')
+const { StatusCodes, getReasonPhrase } = require('http-status-codes')
 
-/* // setting local strategy:
-const localOptions = { usernameField: 'email' }
-const localLogin = new LocalStrategy(
-  localOptions,
-  async (email, password, done) => {
-    const user = await db.user.findFirst({
-      where: {
-        email: {
-          equals: email
-        }
-      }
-    })
-
-    if (!user) {
-      return done(null, false)
-    }
-
-    const isMatch = await comparePasswords(password, user.password)
-
-    if (!isMatch) {
-      return done(null, false)
-    }
-
-    return done(null, user)
-  }
-) */
 
 
 /**
  * @description extracts cookies from request
- * @param {*} req 
+ * @param {*} req
  * @returns token
  */
- const cookieExtractor = function (req) {
+const cookieExtractor = (req) => {
   let token = null
   if (req && req.cookies) token = req.cookies.jwt
-  console.log(req);
   return token
-} 
+}
 
-
-/*const cookieExtractor = function (req) {
-  let token = null;
-  if (req && req.signedCookies && req.signedCookies.jwt) {
-      token = req.signedCookies['jwt'];
-  }
-  console.log(req.cookies);
-  return token;
-};*/
 // define the jwt strategy
 
 const jwtLogin = new JwtStrategy({
   jwtFromRequest: cookieExtractor,
   secretOrKey: secret
-}, async (payload, done) => {
-  console.log(payload);
-   const user = await db.user.findUnique({
+}, async (jwtPayload, done) => {
+  if (Date.now() > jwtPayload.expires) {
+    return done(StatusCodes.UNAUTHORIZED, null, 'Token expired')
+  }
+  console.log(jwtPayload)
+  const user = await db.user.findUnique({
     where: {
-      id: payload.sub
+      id: jwtPayload.sub
     }
   })
-
   if (user) {
-    done(null, user)
+    done(null, user, StatusCodes.OK)
   } else {
-    done(null, false)
-  } 
+    done(StatusCodes.NOT_FOUND, false, 'User not found')
+  }
 })
 
 // use defined strategies:
