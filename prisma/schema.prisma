@@ -37,15 +37,19 @@ model Review {
   authorId   String
   comments   Comment[]
   realtorsId String?   @db.ObjectId
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
 }
 
 model Comment {
-  id       String @id @default(dbgenerated()) @map("_id") @db.ObjectId
-  author   User   @relation(fields: [authorId], references: [id])
-  authorId String
-  review   Review @relation(fields: [reviewId], references: [id])
-  reviewId String @db.ObjectId
-  content  String
+  id        String   @id @default(dbgenerated()) @map("_id") @db.ObjectId
+  author    User     @relation(fields: [authorId], references: [id])
+  authorId  String
+  review    Review   @relation(fields: [reviewId], references: [id])
+  reviewId  String   @db.ObjectId
+  content   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
 }
 
