@@ -111,6 +111,28 @@ const allReviewsByUser = async (req, res) => {
     }
   })
   return res.status(StatusCodes.OK).json({
+    message: 'Reviews and related comments ',
+    data: reviews
+  })
+}
+const reviewById = async (req, res) => {
+  const id = req.query.id || req.body.id
+  const review = await db.review.findUnique({
+    where: {
+      id: id
+    },
+    include: {
+      comments: true
+    }
+  })
+  return res.status(StatusCodes.OK).json({
+    message: 'Review and related comments ',
+    data: review
+  })
+}
+const getAllReviews = async (req, res) => {
+  const reviews = await db.review.findMany()
+  return res.status(StatusCodes.OK).json({
     message: 'Review and related comments ',
     data: reviews
   })
@@ -120,6 +142,8 @@ module.exports = {
   createReview,
   updateReview,
   allReviewsByUser,
-  deleteReview
+  deleteReview,
+  reviewById,
+  getAllReviews
 
 }
