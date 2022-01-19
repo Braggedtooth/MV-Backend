@@ -12,7 +12,7 @@ router.use(function admin (req, res, next) {
 })
 router.post('/addUser', validator(Signup, 'body'), async (req, res) => {
   const user = await createUser(req, res)
-  return res.status(StatusCodes.OK).json({ user: user })
+  return res.json({ user: user })
 })
 router.get('/listUsers', async (req, res) => {
   const users = await getAllUsers(req, res)

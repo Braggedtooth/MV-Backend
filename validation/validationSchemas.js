@@ -49,6 +49,10 @@ const WriteReview = z.object({
   content: z.string().min(200).transform((str) => str.toLowerCase().trim()),
   realtorsId: z.string()
 })
+const EditReview = z.object({
+  title: z.string().transform((str) => str.toLowerCase().trim()),
+  content: z.string().min(200).transform((str) => str.toLowerCase().trim()),
+})
 const WriteComment = z.object({
   content: z.string().min(200).transform((str) => str.toLowerCase().trim()),
   reviewId: z.string()
@@ -60,6 +64,7 @@ module.exports = {
   ResetPassword,
   ChangePassword,
   WriteReview,
+  EditReview,
   WriteComment
 
 }

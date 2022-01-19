@@ -1,4 +1,3 @@
-const { json } = require('body-parser')
 const { StatusCodes } = require('http-status-codes')
 const db = require('../db')
 
@@ -9,7 +8,7 @@ const createReview = async (req, res) => {
       .status(StatusCodes.BAD_REQUEST)
       .send({ error: 'Title and content of a review must be provided' })
   }
-  const titleExists = await db.review.findFirst({ where: { title: { equals: { title } }, realtorsId: { equals: { realtorsId } } } })
+  const titleExists = await db.review.findFirst({ where: { title: { equals: title }, realtorsId: { equals: realtorsId } } })
   const validRealtor = await db.realtors.findFirst({ where: { id: realtorsId } })
   if (!validRealtor) {
     return res.status(StatusCodes.BAD_REQUEST).json({
@@ -37,15 +36,11 @@ const createReview = async (req, res) => {
 }
 const updateReview = async (req, res) => {
   const { title, content, id } = req.body
-  const realtorsId = await db.review.findFirst({ where: { id: id }, select: { realtorsId: true } })
-  const titleExists = await db.review.findFirst({ where: { title: { equals: { title } }, realtorsId: { equals: { realtorsId } } } })
+  const checkReview = await db.review.findFirst({ where: { id: id }, select: { realtorsId: true } })
+  const titleExists = await db.review.findFirst({ where: { title: title, realtorsId: checkReview.realtorsId } })
   const isUserReview = await db.review.findFirst({
     where: {
-      author: {
-        id: {
-          equals: req.user.id
-        }
-      }
+      authorId: req.user.id
     }
   })
   if (!isUserReview) {
@@ -62,6 +57,9 @@ const updateReview = async (req, res) => {
   }
 
   const review = await db.review.update({
+    where:{
+      id: id
+    },
     data: {
       title: title,
       content: content
@@ -73,11 +71,8 @@ const deleteReview = async (req, res) => {
   const id = req.query.id || req.body.id
   const isUserReview = await db.review.findFirst({
     where: {
-      author: {
-        id: {
-          equals: req.user.id
-        }
-      }
+      authorId: req.user.id
+
     }
   })
   if (!isUserReview) {
