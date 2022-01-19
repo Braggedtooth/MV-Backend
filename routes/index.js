@@ -4,18 +4,18 @@ const { login } = require('../middleware/login.middleware')
 require('../services/passport')
 const validator = require('../middleware/validator')
 const requireAuth = passport.authenticate('jwt', { session: false })
-const { Login, Signup } = require('../middleware/validationSchemas')
+const { Login, Signup } = require('../validation/validationSchemas')
 const loginMidware = login
-const adminRoutes = require('./user.routes')
+const adminRoutes = require('./admin.routes')
 module.exports = function (app) {
   app.get('/', function (req, res) {
     res.send('ESRA SERVER')
   })
 
   app.get('/user', requireAuth, function (req, res) {
-    res.json({ user: req.user.email })
+    res.json({ user: req.user })
   })
-
+  app.post('/signup', validator(Signup, 'body'), Authentication.signup)
   app.post('/signin', validator(Login, 'body'),
     loginMidware()
     , (req, res) => {
@@ -24,5 +24,4 @@ module.exports = function (app) {
 
   )
   app.use('/admin', requireAuth, adminRoutes)
-  app.post('/signup', validator(Signup, 'body'), Authentication.signup)
 }

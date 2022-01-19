@@ -44,12 +44,22 @@ const ChangePassword = z.object({
   currentPassword: z.string(),
   newPassword: password
 })
-
+const WriteReview = z.object({
+  title: z.string().transform((str) => str.toLowerCase().trim()),
+  content: z.string().min(200).transform((str) => str.toLowerCase().trim()),
+  realtorsId: z.string()
+})
+const WriteComment = z.object({
+  content: z.string().min(200).transform((str) => str.toLowerCase().trim()),
+  reviewId: z.string()
+})
 module.exports = {
   Signup,
   Login,
   ForgotPassword,
   ResetPassword,
-  ChangePassword
+  ChangePassword,
+  WriteReview,
+  WriteComment
 
 }
