@@ -12,31 +12,31 @@ datasource db {
 }
 
 model User {
-  id              String       @id @default(dbgenerated()) @map("_id") @db.ObjectId
-  firstname       String
-  lastname        String
-  email           String       @unique
-  password        String
-  role            Roles        @default(USER)
-  verified        Boolean      @default(false)
-  createdAt       DateTime     @default(now())
-  updatedAt       DateTime     @updatedAt
-  reviews         Review[]
-  comments        Comment[]
-  Permissions     Permissions? @relation(fields: [permissionsName], references: [name])
-  permissionsName String?
+  id        String    @id @default(dbgenerated()) @map("_id") @db.ObjectId
+  firstname String
+  lastname  String
+  email     String    @unique
+  password  String
+  role      Roles     @default(USER)
+  verified  Boolean   @default(false)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  reviews   Review[]
+  comments  Comment[]
+
 }
 
 //user can read write,
 
 model Review {
-  id        String    @id @default(dbgenerated()) @map("_id") @db.ObjectId
-  title     String
-  content   String
-  published Boolean   @default(false)
-  author    User      @relation(fields: [authorId], references: [id])
-  authorId  String
-  comments  Comment[]
+  id         String    @id @default(dbgenerated()) @map("_id") @db.ObjectId
+  title      String
+  content    String
+  published  Boolean   @default(false)
+  author     User      @relation(fields: [authorId], references: [id])
+  authorId   String
+  comments   Comment[]
+  realtorsId String?   @db.ObjectId
 }
 
 model Comment {
@@ -55,8 +55,39 @@ enum Roles {
 }
 
 model Permissions {
-  id      String   @id @default(dbgenerated()) @map("_id") @db.ObjectId
-  permits String[]
-  name    String?  @default("READ")
-  Users   User[]
+  id   String  @id @default(dbgenerated()) @map("_id") @db.ObjectId
+  name String? @default("READ")
+
+}
+
+model Company {
+  id       String     @id @default(dbgenerated()) @map("_id") @db.ObjectId
+  name     String
+  address  String
+  city     String
+  zip_code String
+  agents   Realtors[]
+
+}
+
+model Realtors {
+  id               String   @id @default(dbgenerated()) @map("_id") @db.ObjectId
+  agenttype        String
+  firstname        String
+  lastname         String
+  registrationdate String
+  faction          String
+  Company          Company? @relation(fields: [companyId], references: [id])
+  companyId        String?  @db.ObjectId
+
+}
+
+enum Permits {
+  READ
+  WRITE_REVIEWS
+  WRITE_COMMENTS
+  DELETE_COMMENTS
+  DELETE_REVIEWS
+  UPDATE_REVIEWS
+  PUBLISH_REVIEWS
 }

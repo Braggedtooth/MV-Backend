@@ -1,3 +1,4 @@
+const { StatusCodes } = require('http-status-codes')
 const db = require('../db')
 const generateToken = require('../utils/generateToken')
 /* const permissions = require('../utils/permissions') */
@@ -19,7 +20,7 @@ exports.signin = async (req, res) => {
     maxAge: expires
   })
 
-  res.status(200).send({ message: 'Succesfully logged in', error: '', data: token })
+  res.status(StatusCodes.OK).send({ message: 'Succesfully logged in', error: '', token: token })
 }
 
 exports.signup = async (req, res, next) => {

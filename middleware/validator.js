@@ -1,4 +1,3 @@
-const z = require('zod')
 const { StatusCodes, getReasonPhrase } = require('http-status-codes')
 const validator = (schema, property) => {
   return async (req, res, next) => {
