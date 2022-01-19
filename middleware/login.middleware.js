@@ -13,15 +13,15 @@ exports.login = () => {
       })
       if (!User) {
         return res.status(StatusCodes.NOT_FOUND).json({
-          message: 'user not found',
-          error: getReasonPhrase(400)
+          error: 'user not found'
+
         })
       }
       const correctPassword = await comparePasswords(password, User.password)
       if (!correctPassword) {
-        res.status(StatusCodes.UNAUTHORIZED).json({
-          error: getReasonPhrase(401),
-          message: 'Incorrect password'
+        res.status(StatusCodes.BAD_REQUEST).json({
+          error: 'Incorrect password'
+
         })
       }
       return next()
