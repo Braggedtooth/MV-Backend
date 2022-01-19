@@ -20,7 +20,7 @@ exports.signin = async (req, res) => {
     maxAge: expires
   })
 
-  res.status(StatusCodes.OK).send({ message: 'Succesfully logged in', error: '', token: token })
+  res.status(StatusCodes.OK).json({ message: 'Succesfully logged in', token: token })
 }
 
 exports.signup = async (req, res, next) => {
@@ -28,8 +28,8 @@ exports.signup = async (req, res, next) => {
 
   if (!email || !password) {
     return res
-      .status(422)
-      .send({ error: 'Email and password must be provided' })
+      .status(StatusCodes.BAD_REQUEST)
+      .json({ error: 'Email and password must be provided' })
   }
 
   const existingUser = await db.user.findFirst({
@@ -39,7 +39,7 @@ exports.signup = async (req, res, next) => {
   })
 
   if (existingUser) {
-    return res.status(422).send({ error: 'Email is aleready in use...' })
+    return res.status(StatusCodes.BAD_REQUEST).json({ error: 'Email is aleready in use...' })
   }
 
   await db.user.create({
