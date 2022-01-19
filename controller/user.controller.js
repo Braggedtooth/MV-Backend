@@ -47,8 +47,10 @@ const getAllUsers = async (_, res) => {
   return users
 }
 
-const getUserById = async (id) => {
-  return db.user.findUnique({ where: { id } })
+const getUserById = async (req, res) => {
+  const user = await db.user.findUnique({ where: { id: req.user.id }, select: { firstname: true, lastname: true, email: true, role: true } })
+ 
+  return res.status(StatusCodes.OK).json({ data: user })
 }
 
 /* const updateUserById = async (id, updateBody) => {
