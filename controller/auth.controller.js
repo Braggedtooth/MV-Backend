@@ -9,18 +9,24 @@ exports.signin = async (req, res) => {
   const User = await db.user.findUnique({
     where: {
       email: req.body.email
-    }
+    },
+    select: { role: true, email: true, firstname: true, lastname: true, id: true }
   })
+  if (!User) {
+    return res.json({
+      error: {
+        message: 'User with that email and password combination was not found'
+      }
+    })
+  }
   const token = generateToken(User)
   /** assign  jwt to the cookie */
   res.cookie('jwt', token, {
     signed: true,
     httpOnly: true,
-    secure: true,
+    secure: false,
     maxAge: expires
-  })
-
-  res.status(StatusCodes.OK).json({ message: 'Succesfully logged in', token: token })
+  }).status(StatusCodes.OK).json({ message: 'Succesfully logged in', User: { email: User.email, lastname: User.lastname, firstname: User.firstname, role: User.role } })
 }
 
 exports.signup = async (req, res, next) => {
@@ -29,7 +35,7 @@ exports.signup = async (req, res, next) => {
   if (!email || !password) {
     return res
       .status(StatusCodes.BAD_REQUEST)
-      .json({ error: 'Email and password must be provided' })
+      .json({ error: { message: 'Email and password must be provided' } })
   }
 
   const existingUser = await db.user.findFirst({
@@ -39,7 +45,7 @@ exports.signup = async (req, res, next) => {
   })
 
   if (existingUser) {
-    return res.status(StatusCodes.BAD_REQUEST).json({ error: 'Email is aleready in use...' })
+    return res.status(StatusCodes.BAD_REQUEST).json({ error: { message: 'Email is aleready in use...' } })
   }
 
   await db.user.create({
@@ -50,12 +56,6 @@ exports.signup = async (req, res, next) => {
       lastname
     }
   })
-  /* await db.permissions.create({
-    data: {
-      permit: [permissions.READ],
-      userId: user.id
-    }
-  }) */
 
   return res.json({ message: 'Account Succesfully Created' })
 }
