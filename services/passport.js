@@ -33,8 +33,7 @@ const jwtLogin = new JwtStrategy({
   const user = await db.user.findUnique({
     where: {
       id: jwtPayload.sub
-    },
-    select: { id: true, role: true, verified: true, email: true }
+    }
   })
   if (user) {
     done(null, user, StatusCodes.OK)
@@ -45,4 +44,3 @@ const jwtLogin = new JwtStrategy({
 
 // use defined strategies:
 passport.use(jwtLogin)
-/* passport.use(localLogin) */

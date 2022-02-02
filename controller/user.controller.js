@@ -49,7 +49,7 @@ const getAllUsers = async (_, res) => {
 
 const getUserById = async (req, res) => {
   const user = await db.user.findUnique({ where: { id: req.user.id }, select: { firstname: true, lastname: true, email: true, role: true } })
- 
+
   return res.status(StatusCodes.OK).json({ data: user })
 }
 
@@ -68,11 +68,42 @@ const deleteUserById = async (id) => {
   })
   return user
 }
+const editProfile = async (req, res) => {
+  const { email, firstname, lastname } = req.body
+  if (!req.body) {
+    return res.status(StatusCodes.BAD_REQUEST).json({ error: { message: 'Nothing changed' } })
+  }
+
+  if (email | lastname | firstname) {
+    await db.user.update({
+      where: { id: req.user.id },
+      data: {
+        email,
+        firstname,
+        lastname
+      }
+    })
+    return res.status(StatusCodes.OK).json({ message: 'Account details updated' })
+  }
+
+  if (email && lastname && firstname) {
+    await db.user.update({
+      where: { id: req.user.id },
+      data: {
+        email,
+        firstname,
+        lastname
+      }
+    })
+    return res.status(StatusCodes.OK).json({ message: 'Account details updated' })
+  }
+}
 
 module.exports = {
   createUser,
   getAllUsers,
   getUserById,
   getUserByEmail,
-  deleteUserById
+  deleteUserById,
+  editProfile
 }
