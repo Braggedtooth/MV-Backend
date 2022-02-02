@@ -11,12 +11,6 @@ exports.login = () => {
         },
         select: { id: true, password: true, email: true }
       })
-      if (!User) {
-        return res.status(StatusCodes.NOT_FOUND).json({
-          error: 'user not found'
-
-        })
-      }
       const correctPassword = await comparePasswords(password, User.password)
       if (!correctPassword) {
         res.status(StatusCodes.BAD_REQUEST).json({
