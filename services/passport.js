@@ -3,6 +3,7 @@ const JwtStrategy = require('passport-jwt').Strategy
 const { secret } = require('../config')
 const db = require('../db')
 const { StatusCodes } = require('http-status-codes')
+const { ExtractJwt } = require('passport-jwt')
 
 /**
  * @description extracts cookies from request
@@ -10,7 +11,7 @@ const { StatusCodes } = require('http-status-codes')
  * @returns token
  */
 
-const cookieExtractor = function (req) {
+/* const cookieExtractor = function (req) {
   let token = null
   if (req && req.signedCookies && req.signedCookies.jwt) {
     token = req.signedCookies.jwt
@@ -19,12 +20,12 @@ const cookieExtractor = function (req) {
   }
 
   return token
-}
+} */
 
 // define the jwt strategy
 
 const jwtLogin = new JwtStrategy({
-  jwtFromRequest: cookieExtractor,
+  jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
   secretOrKey: secret
 }, async (jwtPayload, done) => {
   if (Date.now() > jwtPayload.expires) {

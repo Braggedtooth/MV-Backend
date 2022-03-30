@@ -1,4 +1,10 @@
 const { StatusCodes, getReasonPhrase } = require('http-status-codes')
+/**
+ *
+ * @param {*} schema  validation schema
+ * @param {*} property
+ * @returns next()
+ */
 const validator = (schema, property) => {
   return async (req, res, next) => {
     try {

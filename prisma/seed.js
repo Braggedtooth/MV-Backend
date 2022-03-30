@@ -1,8 +1,7 @@
 const { PrismaClient } = require('@prisma/client')
 const prisma = new PrismaClient()
-
 async function main () {
-  const alice = await prisma.user.create({
+/*   const alice = await prisma.user.create({
     data: {
       email: 'aliceac@repdla.io',
       name: 'Bonga',
@@ -38,9 +37,35 @@ async function main () {
         ]
       }
     }
-  })
+  }) */
+  /*   for (let i = 0; i < Mycompanys.length; i++) {
+    await prisma.company.create({
+      data:Mycompanys[i]
+    })
+  }
+  for (let i = 0; i < Myrealtors.length; i++) {
+    await prisma.realtors.createMany({
+  data:Myrealtors[i]
 
-  console.log({ alice, bob })
+    })
+  } */
+
+  const realtos = await prisma.company.findMany({ select: { name: true, id: true } })
+
+  for (let i = 0; i < realtos.length; i++) {
+    await prisma.realtors.updateMany({
+      where: {
+        faction: {
+          contains: realtos[i].name
+        }
+      },
+      data: {
+        companyId: realtos[i].id,
+        companyName: realtos[i].name
+      }
+
+    })
+  }
 }
 
 main()
