@@ -6,8 +6,9 @@ const db = require('../db')
 } */
 /**
  * Create a user
- * @param {Object} userBody
  * @returns {Promise<User>}
+ * @param req
+ * @param res
  */
 const createUser = async (req, res) => {
   const { email, password, firstname, lastname } = req.body
@@ -43,7 +44,7 @@ const getAllUsers = async (_, res) => {
   const users = await db.user.findMany({
     include: { reviews: true }
   })
-  if (!users) return res.status(StatusCodes.NOT_FOUND).json({ error: 'No users where found' })
+  /*  if (!users) return res.status(StatusCodes.NOT_FOUND).json({ error: 'No users where found' }) */
   return users
 }
 

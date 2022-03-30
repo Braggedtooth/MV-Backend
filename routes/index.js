@@ -5,7 +5,7 @@ require('../services/passport')
 const validator = require('../middleware/validator')
 const requireAuth = passport.authenticate('jwt', { session: false })
 const { Login, Signup } = require('../validation/validationSchemas')
-const loginMidware = login
+const realtorRoutes = require('./realtors.routes')
 const adminRoutes = require('./admin.routes')
 const userRoutes = require('./user.routes')
 module.exports = function (app) {
@@ -23,4 +23,5 @@ module.exports = function (app) {
     Authentication.signin(req, res)
   })
   app.use('/admin', requireAuth, adminRoutes)
+  app.use('/realtor', requireAuth, realtorRoutes)
 }
