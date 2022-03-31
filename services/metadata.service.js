@@ -1,8 +1,14 @@
 const { date } = require('zod')
 const db = require('../db')
 const metaDataService = () => {
-  const getTotalAmountOfReviews = async (company) => {
-    let amountOfviews
+  /**
+  *
+  * @param {*} companyId
+  * @returns  Count of reviews in a company collection
+  */
+  const getTotalAmountOfReviews = async (companyId) => {
+    const company = db.company.findFirst({ where: { id: companyId } })
+    let amountOfviews = 0
     company.agents.map((agent) => {
       db.review.findFirst({
         where: {
@@ -14,17 +20,20 @@ const metaDataService = () => {
     })
     return amountOfviews
   }
-  const addReviewCount = async (company) => {
-    const TotalReviews = getTotalAmountOfReviews(company)
-    await db.company.update({
+  /**
+   *
+   * @param {*} companyId
+   * @returns adds ammount of reviews to company collections
+   */
+  const addReviewCount = async (companyId) => {
+    const TotalReviews = getTotalAmountOfReviews(companyId)
+    return await db.company.update({
       where: {
-        id: company.id
+        id: companyId
       },
       data: {
-        metadata: {
-          total_company_reviews: TotalReviews,
-          updated_at: date.now()
-        }
+        total_company_reviews: TotalReviews,
+        updated_at: date.now()
       }
     })
   }

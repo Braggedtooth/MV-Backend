@@ -6,8 +6,10 @@ const validator = require('../middleware/validator')
 const requireAuth = passport.authenticate('jwt', { session: false })
 const { Login, Signup } = require('../validation/validationSchemas')
 const realtorRoutes = require('./realtors.routes')
+const reviewRoutes = require('./review.routes')
 const adminRoutes = require('./admin.routes')
 const userRoutes = require('./user.routes')
+const loginMiddleware = login
 module.exports = function (app) {
   app.get('/', function (req, res) {
     res.send('ESRA SERVER')
@@ -19,9 +21,10 @@ module.exports = function (app) {
   })
   app.use('/user', requireAuth, userRoutes)
   app.post('/signup', validator(Signup, 'body'), Authentication.signup)
-  app.post('/signin', validator(Login, 'body'), loginMidware(), (req, res) => {
+  app.post('/signin', validator(Login, 'body'), loginMiddleware(), (req, res) => {
     Authentication.signin(req, res)
   })
+  app.use('/reviews', requireAuth, reviewRoutes)
   app.use('/admin', requireAuth, adminRoutes)
   app.use('/realtor', requireAuth, realtorRoutes)
 }

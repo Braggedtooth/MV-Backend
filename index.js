@@ -19,7 +19,7 @@ app.use(express.json())
 app.use(cookieParser(cookieSecret))
 app.use(express.urlencoded({ extended: true }))
 app.use(cors({
-  origin: '*',
+  origin: true,
   credentials: true
 }))
 app.use(passport.initialize())
