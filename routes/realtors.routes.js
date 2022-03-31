@@ -3,13 +3,7 @@ const { StatusCodes, getReasonPhrase } = require('http-status-codes')
 const { searchRealtorsByName, getAllRealtor, getRealtorsInCompany, getRealtorById } = require('../controller/realtor.controller')
 
 const router = express.Router()
-/* router.use(function admin (req, res, next) {
-  if (!req.user.role) {
-    return res.status(StatusCodes.UNAUTHORIZED).json({ error: 'You do not have the permmision to do that' })
-  }
-  next()
-})
- */
+
 router.get('/', async (_req, res) => {
   try {
     const realtors = await getAllRealtor()

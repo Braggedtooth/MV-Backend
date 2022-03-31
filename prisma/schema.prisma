@@ -40,15 +40,6 @@ model Review {
   realtorsId String?   @db.ObjectId
   createdAt  DateTime  @default(now())
   updatedAt  DateTime  @updatedAt
-  id         String    @id @default(dbgenerated()) @map("_id") @db.ObjectId
-  title      String
-  content    String
-  published  Boolean   @default(false)
-  author     User      @relation(fields: [authorId], references: [id])
-  authorId   String
-  comments   Comment[]
-  Realtors   Realtors? @relation(fields: [realtorsId], references: [id])
-  realtorsId String?   @db.ObjectId
 }
 
 model Comment {

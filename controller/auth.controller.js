@@ -6,27 +6,27 @@ const generateToken = require('../utils/generateToken')
 exports.signin = async (req, res) => {
   const expires = parseInt(process.env.JWT_EXPIRATION_MS)
   /** generate a signed json web token and return it in the response */
-  const User = await db.user.findUnique({
+  const user = await db.user.findUnique({
     where: {
       email: req.body.email
     },
     select: { role: true, email: true, firstname: true, lastname: true, id: true }
   })
-  if (!User) {
+  if (!user) {
     return res.json({
       error: {
         message: 'User with that email and password combination was not found'
       }
     })
   }
-  const token = generateToken(User)
+  const token = generateToken(user)
   /** assign  jwt to the cookie */
   res.cookie('jwt', token, {
     signed: true,
     httpOnly: true,
     secure: false,
     maxAge: expires
-  }).status(StatusCodes.OK).json({ message: 'Succesfully logged in', User: { email: User.email, lastname: User.lastname, firstname: User.firstname, role: User.role } })
+  }).status(StatusCodes.OK).json({ data: { email: user.email, lastname: user.lastname, firstname: user.firstname, role: user.role }, message: 'Succesfully logged in', token })
 }
 
 exports.signup = async (req, res, next) => {
