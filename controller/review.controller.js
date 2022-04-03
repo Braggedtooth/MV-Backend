@@ -1,3 +1,4 @@
+const { metaDataService } = require('./../services/metadata.service')
 const { StatusCodes } = require('http-status-codes')
 const db = require('../db')
 
@@ -8,6 +9,7 @@ const createReview = async (req, res) => {
       .status(StatusCodes.BAD_REQUEST)
       .send({ error: 'Title and content of a review must be provided' })
   }
+  const { addReviewCount } = metaDataService()
   const titleExists = await db.review.findFirst({ where: { title: { equals: title }, realtorsId: { equals: realtorsId } } })
   const validRealtor = await db.realtors.findFirst({ where: { id: realtorsId } })
   if (!validRealtor) {
@@ -31,7 +33,9 @@ const createReview = async (req, res) => {
       realtorsId: realtorsId
 
     }
-  })
+  }).then(() =>
+    addReviewCount(validRealtor.companyId))
+
   return res.status(StatusCodes.CREATED).json({ message: 'Review Created Sucessfully', data: review })
 }
 const updateReview = async (req, res) => {
