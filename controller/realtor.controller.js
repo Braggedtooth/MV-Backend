@@ -21,7 +21,8 @@ const searchRealtorsByName = (queryName) => {
         }
       ]
 
-    }
+    },
+    take: 100
 
   })
   return realtors

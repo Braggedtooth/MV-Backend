@@ -43,5 +43,22 @@ const metaDataService = () => {
     addReviewCount
   }
 }
+const realtorAverageRating = async (realtorId) => {
+  const realtor = await db.realtors.aggregate({
+    _avg: {
+      reviews: {
+        rating: true
+      }
+    },
+    where: {
+      id: realtorId
+    }
+  }
+  )
 
-export default metaDataService
+  return realtor
+}
+module.exports = {
+  metaDataService,
+  realtorAverageRating
+}

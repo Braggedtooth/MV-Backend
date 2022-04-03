@@ -9,6 +9,7 @@ const realtorRoutes = require('./realtors.routes')
 const reviewRoutes = require('./review.routes')
 const adminRoutes = require('./admin.routes')
 const userRoutes = require('./user.routes')
+const searchRealtors = require('../controller/search.controller')
 const loginMiddleware = login
 module.exports = function (app) {
   app.get('/', function (req, res) {
@@ -27,4 +28,5 @@ module.exports = function (app) {
   app.use('/reviews', requireAuth, reviewRoutes)
   app.use('/admin', requireAuth, adminRoutes)
   app.use('/realtor', requireAuth, realtorRoutes)
+  app.get('/r/search', (req, res) => { searchRealtors(req, res) })
 }
