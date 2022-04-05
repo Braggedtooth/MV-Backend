@@ -9,17 +9,11 @@ const passport = require('passport')
 const cookieParser = require('cookie-parser')
 const { cookieSecret } = require('./config')
 
-app.get('/', (req, res) => {
-  console.log('Cookies: ', req.cookies)
-  // Cookies that have been signed
-  console.log('Signed Cookies: ', req.signedCookies)
-  res.json({ message: 'hello' })
-})
 app.use(express.json())
 app.use(cookieParser(cookieSecret))
 app.use(express.urlencoded({ extended: true }))
 app.use(cors({
-  origin: 'http://localhost:3000',
+  origin: true,
   credentials: true
 }))
 app.use(passport.initialize())

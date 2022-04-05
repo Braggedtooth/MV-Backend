@@ -1,5 +1,10 @@
-const z = require('zod')
 const { StatusCodes, getReasonPhrase } = require('http-status-codes')
+/**
+ *
+ * @param {*} schema  validation schema
+ * @param {*} property
+ * @returns next()
+ */
 const validator = (schema, property) => {
   return async (req, res, next) => {
     try {
@@ -9,7 +14,7 @@ const validator = (schema, property) => {
       const { issues } = error
       const message = issues.map(i => i.message).join(',')
       const path = issues.map(i => i.path).join(',')
-      res.status(StatusCodes.UNPROCESSABLE_ENTITY).json({ error: message, path: path, reason: getReasonPhrase(422) })
+      res.status(StatusCodes.BAD_REQUEST).json({ error: message, path: path, reason: getReasonPhrase(400) })
     }
   }
 }

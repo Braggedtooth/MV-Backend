@@ -1,3 +1,4 @@
+const { StatusCodes } = require('http-status-codes')
 const db = require('../db')
 const generateToken = require('../utils/generateToken')
 /* const permissions = require('../utils/permissions') */
@@ -5,21 +6,27 @@ const generateToken = require('../utils/generateToken')
 exports.signin = async (req, res) => {
   const expires = parseInt(process.env.JWT_EXPIRATION_MS)
   /** generate a signed json web token and return it in the response */
-  const User = await db.user.findUnique({
+  const user = await db.user.findUnique({
     where: {
       email: req.body.email
-    }
+    },
+    select: { role: true, email: true, firstname: true, lastname: true, id: true }
   })
-  const token = generateToken(User)
+  if (!user) {
+    return res.json({
+      error: {
+        message: 'User with that email and password combination was not found'
+      }
+    })
+  }
+  const token = generateToken(user)
   /** assign  jwt to the cookie */
   res.cookie('jwt', token, {
     signed: true,
     httpOnly: true,
-    secure: true,
+    secure: false,
     maxAge: expires
-  })
-
-  res.status(200).send({ message: 'Succesfully logged in', error: '', data: token })
+  }).status(StatusCodes.OK).json({ data: { email: user.email, lastname: user.lastname, firstname: user.firstname, role: user.role }, message: 'Succesfully logged in', token })
 }
 
 exports.signup = async (req, res, next) => {
@@ -27,8 +34,8 @@ exports.signup = async (req, res, next) => {
 
   if (!email || !password) {
     return res
-      .status(422)
-      .send({ error: 'Email and password must be provided' })
+      .status(StatusCodes.BAD_REQUEST)
+      .json({ error: { message: 'Email and password must be provided' } })
   }
 
   const existingUser = await db.user.findFirst({
@@ -38,7 +45,7 @@ exports.signup = async (req, res, next) => {
   })
 
   if (existingUser) {
-    return res.status(422).send({ error: 'Email is aleready in use...' })
+    return res.status(StatusCodes.BAD_REQUEST).json({ error: { message: 'Email is aleready in use...' } })
   }
 
   await db.user.create({
@@ -49,12 +56,6 @@ exports.signup = async (req, res, next) => {
       lastname
     }
   })
-  /* await db.permissions.create({
-    data: {
-      permit: [permissions.READ],
-      userId: user.id
-    }
-  }) */
 
   return res.json({ message: 'Account Succesfully Created' })
 }

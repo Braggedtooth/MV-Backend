@@ -6,8 +6,9 @@ const db = require('../db')
 } */
 /**
  * Create a user
- * @param {Object} userBody
  * @returns {Promise<User>}
+ * @param req
+ * @param res
  */
 const createUser = async (req, res) => {
   const { email, password, firstname, lastname } = req.body
@@ -43,12 +44,14 @@ const getAllUsers = async (_, res) => {
   const users = await db.user.findMany({
     include: { reviews: true }
   })
-  if (!users) return res.status(StatusCodes.NOT_FOUND).json({ error: 'No users where found' })
+  /*  if (!users) return res.status(StatusCodes.NOT_FOUND).json({ error: 'No users where found' }) */
   return users
 }
 
-const getUserById = async (id) => {
-  return db.user.findUnique({ where: { id } })
+const getUserById = async (req, res) => {
+  const user = await db.user.findUnique({ where: { id: req.user.id }, select: { firstname: true, lastname: true, email: true, role: true } })
+
+  return res.status(StatusCodes.OK).json({ data: user })
 }
 
 /* const updateUserById = async (id, updateBody) => {
@@ -66,11 +69,42 @@ const deleteUserById = async (id) => {
   })
   return user
 }
+const editProfile = async (req, res) => {
+  const { email, firstname, lastname } = req.body
+  if (!req.body) {
+    return res.status(StatusCodes.BAD_REQUEST).json({ error: { message: 'Nothing changed' } })
+  }
+
+  if (email | lastname | firstname) {
+    await db.user.update({
+      where: { id: req.user.id },
+      data: {
+        email,
+        firstname,
+        lastname
+      }
+    })
+    return res.status(StatusCodes.OK).json({ message: 'Account details updated' })
+  }
+
+  if (email && lastname && firstname) {
+    await db.user.update({
+      where: { id: req.user.id },
+      data: {
+        email,
+        firstname,
+        lastname
+      }
+    })
+    return res.status(StatusCodes.OK).json({ message: 'Account details updated' })
+  }
+}
 
 module.exports = {
   createUser,
   getAllUsers,
   getUserById,
   getUserByEmail,
-  deleteUserById
+  deleteUserById,
+  editProfile
 }
