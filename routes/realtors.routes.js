@@ -45,7 +45,7 @@ router.get('/get', async (req, res) => {
   }
 }) */
 
-router.get('/c', async (req, res) => {
+router.get('/ca', async (req, res) => {
   const realtorId = req.query.realtorId
   const averageRating = await prisma.review.aggregate({
     _avg: {

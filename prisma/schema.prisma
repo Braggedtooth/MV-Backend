@@ -3,7 +3,6 @@
 
 generator client {
   provider        = "prisma-client-js"
-  previewFeatures = ["mongoDb"]
 }
 
 datasource db {
@@ -27,16 +26,17 @@ model User {
   //permissionsName String?
 }
 
-//user can read write,
 
 model Review {
   id         String    @id @default(auto()) @map("_id") @db.ObjectId
   title      String
   content    String
   published  Boolean   @default(false)
-  author     User      @relation(fields: [authorId], references: [id])
+  author     User?      @relation(fields: [authorId, authorName], references: [id, firstname])
   authorId   String
   rating     Int
+  likes      Int? @default(0)
+  authorName String?
   comments   Comment[]
   realtorsId String?   @db.ObjectId
   createdAt  DateTime  @default(now())
@@ -46,8 +46,9 @@ model Review {
 
 model Comment {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  author    User     @relation(fields: [authorId], references: [id])
+  author    User?     @relation(fields: [authorId, authorName], references: [id,firstname])
   authorId  String
+  authorName String
   review    Review   @relation(fields: [reviewId], references: [id])
   reviewId  String   @db.ObjectId
   content   String
@@ -66,7 +67,7 @@ model Realtors {
   averageRating    Float @default(0)
   reviews          Review[]
   faction          String
-  Company          Company? @relation(fields: [companyId], references: [id])
+  Company          Company? @relation(fields: [companyId, companyName], references: [id, name])
   companyId        String?  @db.ObjectId
 }
 
@@ -84,9 +85,3 @@ enum Roles {
   ADMIN
 }
 
-//model Permissions {
-//  id      String   @id @default(dbgenerated()) @map("_id") @db.ObjectId
-//  permits String[]
-//  name    String?  @default("READ")
-//  Users   User[]
-//}

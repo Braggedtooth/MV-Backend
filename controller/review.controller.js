@@ -38,6 +38,7 @@ const createReview = async (req, res) => {
 
   return res.status(StatusCodes.CREATED).json({ message: 'Review Created Sucessfully', data: review })
 }
+
 const updateReview = async (req, res) => {
   try {
     const { title, content, id } = req.body
@@ -127,7 +128,11 @@ const allReviewsByUser = async (req, res) => {
 }
 
 const reviewById = async (req, res) => {
-  const id = req.query.id || req.body.id
+  const id = req.query.id
+  console.log(id)
+  if (!id) {
+    return res.status(StatusCodes.NOT_FOUND).json({ message: 'Invalid review id' })
+  }
   const review = await db.review.findUnique({
     where: {
       id: id
@@ -142,10 +147,14 @@ const reviewById = async (req, res) => {
   })
 }
 
-const getAllReviews = async (req, res) => {
-  const reviews = await db.review.findMany()
+const allReviews = async (req, res) => {
+  const reviews = await db.review.findMany({
+    where: {
+      published: true
+    }
+  })
   return res.status(StatusCodes.OK).json({
-    message: 'Review and related comments ',
+    message: 'Reviews ',
     data: reviews
   })
 }
@@ -171,7 +180,7 @@ module.exports = {
   allReviewsByUser,
   deleteReview,
   reviewById,
-  getAllReviews,
+  allReviews,
   togglePublish
 
 }
