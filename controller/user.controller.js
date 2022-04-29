@@ -42,9 +42,21 @@ const createUser = async (req, res) => {
 
 const getAllUsers = async (_, res) => {
   const users = await db.user.findMany({
-    include: { reviews: true }
-  })
-  /*  if (!users) return res.status(StatusCodes.NOT_FOUND).json({ error: 'No users where found' }) */
+    select: {
+      id: true,
+      firstname: true,
+      lastname: true,
+      email: true,
+      role: true,
+      verified: true,
+      createdAt: true,
+      updatedAt: true,
+    },
+  });
+  if (!users)
+    return res
+      .status(StatusCodes.NOT_FOUND)
+      .json({ error: "No users where found" }); 
   return users
 }
 
