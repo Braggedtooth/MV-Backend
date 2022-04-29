@@ -1,6 +1,7 @@
 const { metaDataService } = require('./../services/metadata.service')
 const { StatusCodes } = require('http-status-codes')
 const db = require('../db')
+const { realtors } = require('../db')
 
 const createReview = async (req, res) => {
   const { title, content, realtorsId } = req.body
@@ -133,17 +134,18 @@ const reviewById = async (req, res) => {
   if (!id) {
     return res.status(StatusCodes.NOT_FOUND).json({ message: 'Invalid review id' })
   }
+
   const review = await db.review.findUnique({
     where: {
       id: id
     },
     include: {
-      comments: true
+      comments: true,
     }
   })
   return res.status(StatusCodes.OK).json({
     message: 'Review and related comments ',
-    data: review
+    data:review
   })
 }
 
@@ -174,6 +176,31 @@ const togglePublish = async (req, res) => {
   })
   return res.status(StatusCodes.OK).json({ message: 'Publication status toggled', data: review })
 }
+
+
+const reviewsByRealtorsId = async (req, res) =>{
+  const realtorId = req.query.realtorId
+  if (!realtorId) {
+    return res.status(StatusCodes.NOT_FOUND).json({ message: 'Invalid realtors id' })
+  }
+  const realtor = await db.realtors.findUnique({
+    where:{
+      id: realtorId
+    }
+  })
+  const reviews = await db.review.findMany({
+    where:{ 
+      realtorsId: realtorId
+    },
+    include: {
+      comments: true
+    }
+  })
+  return res.status(StatusCodes.OK).json({
+    message: 'Realtors reviews and related comments ',
+    data: {realtor, reviews}
+  })
+}
 module.exports = {
   createReview,
   updateReview,
@@ -181,6 +208,7 @@ module.exports = {
   deleteReview,
   reviewById,
   allReviews,
+  reviewsByRealtorsId,
   togglePublish
 
 }
