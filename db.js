@@ -31,12 +31,12 @@ async function main () {
         )
         await prisma.realtors.update({
           where: {
-            id: params.args.data.realtorsId
+            id: params.args.data.realtorsId,
           },
           data: {
-            averageRating: averageRating._avg.rating
-          }
-        })
+            averageRating: averageRating._avg.rating || 0,
+          },
+        });
         console.log(averageRating)
       }
     }
