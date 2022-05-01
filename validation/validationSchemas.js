@@ -46,12 +46,20 @@ const ChangePassword = z.object({
 })
 const WriteReview = z.object({
   title: z.string().transform((str) => str.toLowerCase().trim()),
-  content: z.string().min(200).transform((str) => str.toLowerCase().trim()),
-  realtorsId: z.string()
+  content: z
+    .string()
+    .min(200)
+    .transform((str) => str.toLowerCase().trim()),
+  realtorsId: z.string(),
+  rating: z.number().max(5)
 })
 const EditReview = z.object({
+  id: z.string(),
   title: z.string().transform((str) => str.toLowerCase().trim()),
-  content: z.string().min(200).transform((str) => str.toLowerCase().trim()),
+  content: z
+    .string()
+    .min(200)
+    .transform((str) => str.toLowerCase().trim())
 })
 const WriteComment = z.object({
   content: z.string().min(200).transform((str) => str.toLowerCase().trim()),
