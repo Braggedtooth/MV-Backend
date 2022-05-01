@@ -1,8 +1,11 @@
 const express = require('express')
 const { StatusCodes, getReasonPhrase } = require('http-status-codes')
-const { searchRealtorsByName, getAllRealtor, getRealtorsInCompany, getRealtorById } = require('../controller/realtor.controller')
+const {
+  getAllRealtor,
+  getRealtorsInCompany,
+  getRealtorById
+} = require('../controller/realtor.controller')
 const prisma = require('../db')
-const { realtorAverageRating } = require('../services/metadata.service')
 
 const router = express.Router()
 
@@ -11,7 +14,9 @@ router.get('/', async (_req, res) => {
     const realtors = await getAllRealtor()
     return res.status(StatusCodes.ACCEPTED).json({ realtors })
   } catch (error) {
-    return res.status(StatusCodes.BAD_REQUEST).json({ message: getReasonPhrase(400), error: error })
+    return res
+      .status(StatusCodes.BAD_REQUEST)
+      .json({ error: getReasonPhrase(400) })
   }
 })
 router.get('/get', async (req, res) => {
@@ -19,33 +24,19 @@ router.get('/get', async (req, res) => {
   try {
     const realtors = await getRealtorById(realtorId)
     if (!realtors) {
-      return res.status(StatusCodes.ACCEPTED).json({ message: 'No realtor with that id exist' })
+      return res
+        .status(StatusCodes.ACCEPTED)
+        .json({ message: 'No realtor with that id exist' })
     }
     return res.status(StatusCodes.ACCEPTED).json({ realtors })
   } catch (error) {
-    return res.status(StatusCodes.BAD_REQUEST).json({ message: getReasonPhrase(400), error: error.message })
+    return res
+      .status(StatusCodes.BAD_REQUEST)
+      .json({ error: getReasonPhrase(400) })
   }
 })
 
-/* router.get('/search', async (req, res) => {
-  const query = req.query.query
-  console.log(req.query)
-  if (!query) {
-    return res.status(StatusCodes.ACCEPTED).json({ message: 'search with a firstname or lastname' })
-  }
-  try {
-    const realtors = await searchRealtorsByName(query)
-    if (realtors.length === 0) {
-      return res.status(StatusCodes.ACCEPTED).json({ message: 'No result found for ' + query })
-    }
-    return res.status(StatusCodes.ACCEPTED).json(realtors)
-  } catch (error) {
-    console.log(error)
-    return res.status(StatusCodes.BAD_REQUEST).json({ message: getReasonPhrase(400), error: JSON.parse(error.message) })
-  }
-}) */
-
-router.get('/ca', async (req, res) => {
+router.get('/calculateAvgRating', async (req, res) => {
   const realtorId = req.query.realtorId
   const averageRating = await prisma.review.aggregate({
     _avg: {
@@ -54,11 +45,10 @@ router.get('/ca', async (req, res) => {
     where: {
       realtorsId: realtorId
     }
-  }
-  )
+  })
 
   try {
-    const realt = await prisma.realtors.update({
+    const realtor = await prisma.realtors.update({
       where: {
         id: realtorId
       },
@@ -66,21 +56,23 @@ router.get('/ca', async (req, res) => {
         averageRating: averageRating._avg.rating
       }
     })
-    console.log(realt)
-    return res.status(StatusCodes.ACCEPTED).json(realt)
+    return res.status(StatusCodes.ACCEPTED).json(realtor)
   } catch (error) {
-    console.log(error)
-    return res.status(StatusCodes.BAD_REQUEST).json({ message: getReasonPhrase(400), error: error.message })
+    return res
+      .status(StatusCodes.BAD_REQUEST)
+      .json({ error: getReasonPhrase(400) })
   }
 })
 
-router.get('/c', async (req, res) => {
+router.get('/company', async (req, res) => {
   const companyId = req.query.companyId
   try {
     const company = await getRealtorsInCompany(companyId)
     return res.status(StatusCodes.ACCEPTED).json({ company })
   } catch (error) {
-    return res.status(StatusCodes.BAD_REQUEST).json({ message: getReasonPhrase(400), error: error })
+    return res
+      .status(StatusCodes.BAD_REQUEST)
+      .json({ error: getReasonPhrase(400) })
   }
 })
 
