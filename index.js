@@ -22,7 +22,4 @@ app.use(cors({
 }))
 app.use(passport.initialize())
 router(app)
-app.listen(port, () => console.log(
-  `Example app listening on port ${port}!`
-
-))
+app.listen(port);
