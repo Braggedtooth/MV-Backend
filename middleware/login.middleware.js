@@ -7,33 +7,34 @@ exports.login = () => {
       const { email, password } = req.body
       const user = await db.user.findUnique({
         where: {
-          email: email
+          email: email,
         },
-        select: { id: true, password: true, email: true, role: true }
-      })
+        select: {
+          id: true,
+          password: true,
+          email: true,
+          role: true,
+          status: true,
+        },
+      });
       if (!user) {
         return res.status(StatusCodes.NOT_FOUND).json({
-          error: { message: 'user not found' }
-
-        })
+          error: "user not found",
+        });
       }
-      const correctPassword = await comparePasswords(password, user.password)
+      const correctPassword = await comparePasswords(password, user.password);
       if (correctPassword) {
-        return next()
+        return next();
       } else {
         return res.status(StatusCodes.BAD_REQUEST).json({
-          error: {
-            message: 'Incorrect password'
-          }
-
-        })
+          error: "Incorrect password",
+        });
       }
     } catch (error) {
       res.status(StatusCodes.BAD_REQUEST).json({
-        error: {
-          message: 'user with that email and password combination does not exists',
+          error: 'user with that email and password combination does not exists',
           error
-        }
+        
       })
     }
   }

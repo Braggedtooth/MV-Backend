@@ -1,18 +1,22 @@
 const { metaDataService } = require('./../services/metadata.service')
 const { StatusCodes } = require('http-status-codes')
 const db = require('../db')
-const { realtors } = require('../db')
+
 
 const createReview = async (req, res) => {
-  const { title, content, realtorsId } = req.body
+  const { title, content, realtorsId, rating } = req.body
   if (!title || !content) {
     return res
       .status(StatusCodes.BAD_REQUEST)
       .send({ error: 'Title and content of a review must be provided' })
   }
-  const { addReviewCount } = metaDataService()
-  const titleExists = await db.review.findFirst({ where: { title: { equals: title }, realtorsId: { equals: realtorsId } } })
-  const validRealtor = await db.realtors.findFirst({ where: { id: realtorsId } })
+  /*  const { addReviewCount } = metaDataService(); */
+  const titleExists = await db.review.findFirst({
+    where: { title: { equals: title }, realtorsId: { equals: realtorsId } }
+  })
+  const validRealtor = await db.realtors.findFirst({
+    where: { id: realtorsId }
+  })
   if (!validRealtor) {
     return res.status(StatusCodes.BAD_REQUEST).json({
       data: { title, content },
@@ -26,40 +30,40 @@ const createReview = async (req, res) => {
     })
   }
   const authorId = req.user.id
+  const authorName = req.user.firstname
   const review = await db.review.create({
     data: {
-      authorId: authorId,
-      title: title,
-      content: content,
-      realtorsId: realtorsId
-
+      title,
+      content,
+      authorId,
+      authorName,
+      realtorsId,
+      rating
     }
-  }).then(() =>
-    addReviewCount(validRealtor.companyId))
+  })
+  /* .then(() => addReviewCount(validRealtor.companyId)); */
 
-  return res.status(StatusCodes.CREATED).json({ message: 'Review Created Sucessfully', data: review })
+  return res
+    .status(StatusCodes.CREATED)
+    .json({ message: 'Review Created Sucessfully', data: review })
 }
 
 const updateReview = async (req, res) => {
   try {
     const { title, content, id } = req.body
     const checkReview = await db.review.findFirst({ where: { id: id } })
-    const isUserReview = await db.review.findFirst({
-      where: {
-        authorId: req.user.id
-      }
-    })
+
     if (!checkReview) {
       return res.status(StatusCodes.BAD_REQUEST).json({
         error: 'A review with that id does not exist'
       })
     }
-    if (checkReview.content === content && checkReview.title === title) {
+    if (checkReview.content === content || checkReview.title === title) {
       return res.status(StatusCodes.OK).json({
         error: 'Nothing changed in review'
       })
     }
-    if (!isUserReview) {
+    if (checkReview.authorId !== req.user.id) {
       return res.status(StatusCodes.UNAUTHORIZED).json({
         data: { title, content },
         error: 'You can only update your own reviews'
@@ -75,7 +79,9 @@ const updateReview = async (req, res) => {
         content: content
       }
     })
-    return res.status(StatusCodes.OK).json({ message: 'Review Updated Sucessfully', data: review })
+    return res
+      .status(StatusCodes.OK)
+      .json({ message: 'Review Updated Sucessfully', data: review })
   } catch (error) {
     return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
       error: error

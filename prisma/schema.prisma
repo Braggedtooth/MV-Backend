@@ -2,7 +2,7 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider        = "prisma-client-js"
+  provider = "prisma-client-js"
 }
 
 datasource db {
@@ -11,49 +11,48 @@ datasource db {
 }
 
 model User {
-  id        String    @id @default(auto()) @map("_id") @db.ObjectId
+  id        String        @id @default(auto()) @map("_id") @db.ObjectId
   firstname String
   lastname  String
-  email     String    @unique
+  email     String        @unique
   password  String
-  role      Roles     @default(USER)
-  verified  Boolean   @default(false)
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  role      Roles         @default(USER)
+  verified  Boolean       @default(false)
+  status    AccountStatus @default(ACTIVE)
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
   reviews   Review[]
   comments  Comment[]
-  //Permissions     Permissions? @relation(fields: [permissionsName], references: [name])
-  //permissionsName String?
+  OTP       Otp?
 }
-
 
 model Review {
   id         String    @id @default(auto()) @map("_id") @db.ObjectId
   title      String
   content    String
   published  Boolean   @default(false)
-  author     User?      @relation(fields: [authorId, authorName], references: [id, firstname])
+  author     User?     @relation(fields: [authorId, authorName], references: [id, firstname], onDelete: Cascade, onUpdate: Cascade)
   authorId   String
-  rating     Int
-  likes      Int? @default(0)
+  rating     Int       @default(0)
+  likes      Int       @default(0)
   authorName String?
   comments   Comment[]
   realtorsId String?   @db.ObjectId
   createdAt  DateTime  @default(now())
   updatedAt  DateTime  @updatedAt
-  Realtors   Realtors? @relation(fields: [realtorsId], references: [id])
+  Realtors   Realtors? @relation(fields: [realtorsId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 }
 
 model Comment {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  author    User?     @relation(fields: [authorId, authorName], references: [id,firstname])
-  authorId  String
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  author     User?    @relation(fields: [authorId, authorName], references: [id, firstname], onDelete: Cascade, onUpdate: Cascade)
+  authorId   String
   authorName String
-  review    Review   @relation(fields: [reviewId], references: [id])
-  reviewId  String   @db.ObjectId
-  content   String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  review     Review?  @relation(fields: [reviewId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  reviewId   String   @db.ObjectId
+  content    String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 
 }
 
@@ -64,10 +63,10 @@ model Realtors {
   firstname        String
   lastname         String
   registrationdate String
-  averageRating    Float @default(0)
+  averageRating    Float    @default(0)
   reviews          Review[]
   faction          String
-  Company          Company? @relation(fields: [companyId, companyName], references: [id, name])
+  Company          Company? @relation(fields: [companyId, companyName], references: [id, name], onDelete: Cascade, onUpdate: Cascade)
   companyId        String?  @db.ObjectId
 }
 
@@ -80,8 +79,20 @@ model Company {
   zip_code String
 }
 
+model Otp {
+  id     String @id @default(auto()) @map("_id") @db.ObjectId
+  user   User   @relation(fields: [userId], references: [id])
+  userId String @db.ObjectId
+}
+
 enum Roles {
   USER
   ADMIN
 }
 
+enum AccountStatus {
+  ACTIVE
+  PENDING
+  BANNED
+  DELETED
+}

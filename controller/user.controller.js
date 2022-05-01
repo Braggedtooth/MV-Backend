@@ -42,49 +42,130 @@ const createUser = async (req, res) => {
 
 const getAllUsers = async (_, res) => {
   const users = await db.user.findMany({
+    where: {
+      status: {
+        not: 'DELETED'
+      }
+    },
     select: {
       id: true,
       firstname: true,
       lastname: true,
       email: true,
       role: true,
+      status: true,
       verified: true,
       createdAt: true,
-      updatedAt: true,
-    },
-  });
+      updatedAt: true
+    }
+  })
   if (!users)
     return res
       .status(StatusCodes.NOT_FOUND)
-      .json({ error: "No users where found" }); 
+      .json({ error: 'No users where found' })
   return users
 }
 
 const getUserById = async (req, res) => {
-  const user = await db.user.findUnique({ where: { id: req.user.id }, select: { firstname: true, lastname: true, email: true, role: true } })
+  const user = await db.user.findUnique({
+    where: { id: req.user.id },
+    select: { firstname: true, lastname: true, email: true, role: true }
+  })
 
   return res.status(StatusCodes.OK).json({ data: user })
 }
 
-/* const updateUserById = async (id, updateBody) => {
-
+const changeUserRole = async (id) => {
+  const user = await db.user.findFirst({
+    where: {
+      id: id
+    }
   })
-  return user
-} */
+  if (user.role === 'ADMIN') {
+    return db.user.update({
+      where: {
+        id: id
+      },
+      data: {
+        role: 'USER'
+      }
+    })
+  }
+  await db.user.update({
+    where: {
+      id: id
+    },
+    data: {
+      role: 'ADMIN'
+    }
+  })
+}
 const getUserByEmail = (email) => {
-  const user = db.user.findFirst({ where: { email } })
+  const user = db.user.findFirst({ where: { email: email } })
   return user
 }
 const deleteUserById = async (id) => {
-  const user = await db.user.delete({
-    where: { id: id }
+  const user = await db.user.findFirst({
+    where: {
+      id: id
+    }
+  })
+  if (user.role === 'ADMIN') return
+  if (user.status !== 'DELETED') {
+    return await db.user.update({
+      where: { id: id },
+      data: {
+        status: 'DELETED'
+      }
+    })
+  }
+}
+const banUser = async (id) => {
+  const user = await db.user.findFirst({
+    where: {
+      id: id
+    }
+  })
+  if (user.role === 'ADMIN') return
+  await db.user.update({
+    where: { id: id },
+    data: {
+      status: 'BANNED'
+    }
+  })
+  return user
+}
+const requestDelete = async (id) => {
+  const user = await db.user.update({
+    where: { id: id },
+    data: {
+      status: 'PENDING'
+    }
+  })
+  return user
+}
+const activateAccount = async (id) => {
+  const user = await db.user.findFirst({
+    where: {
+      id: id
+    }
+  })
+  if (user.status === 'DELETED') return
+  if (user.status === 'ACTIVE') return
+  await db.user.update({
+    where: { id: id },
+    data: {
+      status: 'ACTIVE'
+    }
   })
   return user
 }
 const editProfile = async (req, res) => {
   const { email, firstname, lastname } = req.body
   if (!req.body) {
-    return res.status(StatusCodes.BAD_REQUEST).json({ error: { message: 'Nothing changed' } })
+    return res
+      .status(StatusCodes.BAD_REQUEST)
+      .json({ error: 'Nothing changed' })
   }
 
   if (email | lastname | firstname) {
@@ -96,7 +177,9 @@ const editProfile = async (req, res) => {
         lastname
       }
     })
-    return res.status(StatusCodes.OK).json({ message: 'Account details updated' })
+    return res
+      .status(StatusCodes.OK)
+      .json({ message: 'Account details updated' })
   }
 
   if (email && lastname && firstname) {
@@ -108,7 +191,9 @@ const editProfile = async (req, res) => {
         lastname
       }
     })
-    return res.status(StatusCodes.OK).json({ message: 'Account details updated' })
+    return res
+      .status(StatusCodes.OK)
+      .json({ message: 'Account details updated' })
   }
 }
 
@@ -116,7 +201,11 @@ module.exports = {
   createUser,
   getAllUsers,
   getUserById,
+  changeUserRole,
   getUserByEmail,
+  activateAccount,
   deleteUserById,
+  requestDelete,
+  banUser,
   editProfile
 }
