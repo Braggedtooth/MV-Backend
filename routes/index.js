@@ -7,6 +7,7 @@ const requireAuth = passport.authenticate('jwt', { session: false })
 const { Login, Signup } = require('../validation/validationSchemas')
 const realtorRoutes = require('./realtors.routes')
 const reviewRoutes = require('./review.routes')
+const verifyRoutes = require('./verify')
 const adminRoutes = require('./admin.routes')
 const userRoutes = require('./user.routes')
 const searchRealtors = require('../controller/search.controller')
@@ -22,11 +23,19 @@ module.exports = function (app) {
   })
   app.use('/user', requireAuth, userRoutes)
   app.post('/signup', validator(Signup, 'body'), Authentication.signup)
-  app.post('/signin', validator(Login, 'body'), loginMiddleware(), (req, res) => {
-    Authentication.signin(req, res)
-  })
+  app.post(
+    '/signin',
+    validator(Login, 'body'),
+    loginMiddleware(),
+    (req, res) => {
+      Authentication.signin(req, res)
+    }
+  )
+  app.use('/verify', verifyRoutes)
   app.use('/reviews', requireAuth, reviewRoutes)
   app.use('/admin', requireAuth, adminRoutes)
   app.use('/realtor', requireAuth, realtorRoutes)
-  app.get('/r/search', (req, res) => { searchRealtors(req, res) })
+  app.get('/r/search', (req, res) => {
+    searchRealtors(req, res)
+  })
 }
