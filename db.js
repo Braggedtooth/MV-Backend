@@ -8,6 +8,7 @@ module.exports = prisma
 
 /**
  * @description middleware to initialize db and auto hash password on create requests on the user model
+ * also calculates average ratings for realtors whenever a new review is created.
  */
 async function main () {
   prisma.$use(async (params, next) => {

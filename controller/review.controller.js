@@ -168,34 +168,47 @@ const allReviews = async (req, res) => {
 }
 const togglePublish = async (req, res) => {
   const id = req.query.id || req.body.id
-  const publish = await db.review.findFirst({
+  const review = await db.review.findFirst({
     where: { id: id },
     select: { published: true }
   })
-  const toggleVal = (val) => { return !val }
-  const review = await db.review.update({
+
+  const toggleVal = (val) => {
+    return !val
+  }
+  if (!review) {
+    return res
+      .status(StatusCodes.NOT_FOUND)
+      .json({ error: 'Review does not exists' })
+  }
+  await db.review.update({
     where: { id: id },
     data: {
-      published: toggleVal(publish.published)
+      published: toggleVal(review.published)
     },
     select: { published: true, title: true }
   })
-  return res.status(StatusCodes.OK).json({ message: 'Publication status toggled', data: review })
+  return res.status(StatusCodes.OK).json({
+    message: review.published
+      ? 'Your review has been published'
+      : 'Your review has been concealed'
+  })
 }
 
-
-const reviewsByRealtorsId = async (req, res) =>{
+const reviewsByRealtorsId = async (req, res) => {
   const realtorId = req.query.realtorId
   if (!realtorId) {
-    return res.status(StatusCodes.NOT_FOUND).json({ message: 'Invalid realtors id' })
+    return res
+      .status(StatusCodes.NOT_FOUND)
+      .json({ error: 'Invalid realtors id' })
   }
   const realtor = await db.realtors.findUnique({
-    where:{
+    where: {
       id: realtorId
     }
   })
   const reviews = await db.review.findMany({
-    where:{ 
+    where: {
       realtorsId: realtorId
     },
     include: {
@@ -204,7 +217,7 @@ const reviewsByRealtorsId = async (req, res) =>{
   })
   return res.status(StatusCodes.OK).json({
     message: 'Realtors reviews and related comments ',
-    data: {realtor, reviews}
+    data: { realtor, reviews }
   })
 }
 module.exports = {
