@@ -3,6 +3,13 @@ const HOST = process.env.EMAIL_HOST
 const PORT = process.env.EMAIL_PORT
 const USERNAME = process.env.EMAIL_USERNAME
 const PASSWORD = process.env.EMAIL_PASSWORD
+
+
+/**
+ * 
+ * @param {{to:email, subject:string, html: string}} 
+ * @description sends emails 
+ */
 async function sendEmail({ to, subject, html }) {
   // create reusable transporter object using the default SMTP transport
   let transporter = nodemailer.createTransport({

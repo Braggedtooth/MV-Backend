@@ -30,7 +30,7 @@ model Review {
   id         String    @id @default(auto()) @map("_id") @db.ObjectId
   title      String
   content    String
-  published  Boolean   @default(false)
+  published  Boolean   @default(true)
   author     User?     @relation(fields: [authorId, authorName], references: [id, firstname], onDelete: Cascade, onUpdate: Cascade)
   authorId   String
   rating     Int       @default(0)
