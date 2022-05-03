@@ -16,10 +16,6 @@ module.exports = function (app) {
     res.send('ESRA SERVER')
   })
 
-  app.delete('/logout', function (req, res) {
-    res.clearCookie('jwt')
-    return res.status(200).json({ message: 'Logged out' })
-  })
   app.use('/user', requireAuth, userRoutes)
   app.post('/signup', validator(Signup, 'body'), Authentication.signup)
   app.post(

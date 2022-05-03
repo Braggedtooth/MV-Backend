@@ -24,28 +24,26 @@ const { ExtractJwt } = require('passport-jwt')
 
 // define the jwt strategy
 
-const jwtLogin = new JwtStrategy({
-  jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-  secretOrKey: secret
-}, async (jwtPayload, done) => {
-  if (jwtPayload.algorithm !== 'HS256') {
-    return done(StatusCodes.UNAUTHORIZED, null, 'Invalid Token')
-  }
-  console.log(jwtPayload.expires)
-  if (Date.now() > jwtPayload.expires) {
-    return done(StatusCodes.UNAUTHORIZED, null, 'Token expired')
-  }
-  const user = await db.user.findUnique({
-    where: {
-      id: jwtPayload.sub
+const jwtLogin = new JwtStrategy(
+  {
+    jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+    secretOrKey: secret
+  },
+  async (jwtPayload, done) => {
+    if (jwtPayload.algorithm !== 'HS256') {
+      return done(StatusCodes.UNAUTHORIZED, null, 'Invalid Token')
     }
-  })
-  if (user) {
+    const user = await db.user.findUnique({
+      where: {
+        id: jwtPayload.sub
+      }
+    })
+    if (!user) {
+      done(StatusCodes.NOT_FOUND, false, 'User not found')
+    }
     done(null, user, StatusCodes.OK)
-  } else {
-    done(StatusCodes.NOT_FOUND, false, 'User not found')
   }
-})
+)
 
 // use defined strategies:
 passport.use(jwtLogin)

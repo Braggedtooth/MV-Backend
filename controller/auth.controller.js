@@ -1,9 +1,8 @@
 const { StatusCodes } = require('http-status-codes')
-const { otp } = require('../db')
 const db = require('../db')
 const sendEmail = require('../services/mailer')
+const { verifyHtml, resendHtml } = require('../services/templates')
 const generateToken = require('../utils/generateToken')
-const CLIENTURL = process.env.CLIENT_BASE_URL
 
 const signin = async (req, res) => {
   /** generate a signed json web token and return it in the response */
@@ -82,14 +81,41 @@ const signup = async (req, res) => {
   const existingUser = await db.user.findFirst({
     where: {
       email: email
+    },
+    select: {
+      id: true,
+      OTP: true,
+      verified: true,
+      email: true,
+      firstname: true,
+      lastname: true
     }
   })
 
   if (existingUser) {
-    return res
-      .status(StatusCodes.BAD_REQUEST)
-      .json({ error: 'Email is aleready in use...' })
+    if (existingUser.verified === true) {
+      return res
+        .status(StatusCodes.CONFLICT)
+        .json({ error: 'Email is already in use...' })
+    }
+    if (existingUser.OTP === null) {
+      const code = await db.otp.create({
+        data: {
+          userId: existingUser.id,
+          expires: Date.now() + 900000
+        }
+      })
+      sendEmail({
+        to: existingUser.email,
+        subject: 'Ny verifications länk',
+        html: resendHtml(existingUser.firstname, existingUser.lastname, code.id)
+      })
+      return res
+        .status(StatusCodes.OK)
+        .json({ message: 'New verification link sent to email' })
+    }
   }
+
   const user = await db.user.create({
     data: {
       email,
@@ -98,31 +124,18 @@ const signup = async (req, res) => {
       lastname
     }
   })
-  const ts = Date.now() + 900000
-  const expiratation = new Date(ts)
-  let hours = expiratation.getHours()
-  let minutes = expiratation.getMinutes()
+
   const code = await db.otp.create({
     data: {
       userId: user.id,
-      expires: expiratation
+      expires: Date.now() + 900000
     }
   })
 
-  const verifyHtml = `
-  <h3>Hej! ${user.firstname} ${user.lastname}</h3>
-  <br>
-  <p>Klicka på nedanstående länk för att verifera ditt konto</p>
-  <br>
-  <a href=${`${CLIENTURL}/verifiera?token=${code.id}`}> Verifiera Konto</a>
-  <p>Länken går ut Klockan ${`0${hours}`.slice(-2)}:${`0${minutes}`.slice(
-    -2
-  )}</p>
-  `
   sendEmail({
     to: user.email,
     subject: 'Verifiera ditt konto',
-    html: verifyHtml
+    html: verifyHtml(user.firstname, user.lastname, code.id)
   })
 
   return res.json({ message: 'Verification link sent to email' })
@@ -131,33 +144,30 @@ const signup = async (req, res) => {
 const verify = async (req, res) => {
   const { token } = req.query
   if (!token) {
-    return res.status(400).json({ error: 'Invalid Token' })
+    return res.status(400)
   }
-
-  console.log(token)
   let ts = Date.now()
-  const dt = new Date(ts)
   const code = await db.otp.findFirst({
-    where: {
-      AND: [
-        { id: token },
-        {
-          expires: {
-            lte: dt
-          }
-        }
-      ]
-    }
+    where: { id: token }
   })
   if (!code) {
+    return res.status(400).json({ error: 'Token does not exists' })
+  }
+  if (code.expires < ts) {
     return res.status(400).json({ error: 'Token has expired' })
   }
+
   await db.user.update({
     where: {
       id: code.userId
     },
     data: {
       verified: true
+    }
+  })
+  await db.otp.delete({
+    where: {
+      id: token
     }
   })
   return res.json({ message: 'Account Verified' })
