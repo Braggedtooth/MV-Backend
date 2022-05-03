@@ -136,7 +136,6 @@ const allReviewsByUser = async (req, res) => {
 
 const reviewById = async (req, res) => {
   const id = req.query.id
-  console.log(id)
   if (!id) {
     return res.status(StatusCodes.NOT_FOUND).json({ message: 'Invalid review id' })
   }

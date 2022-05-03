@@ -31,6 +31,7 @@ const jwtLogin = new JwtStrategy({
   if (jwtPayload.algorithm !== 'HS256') {
     return done(StatusCodes.UNAUTHORIZED, null, 'Invalid Token')
   }
+  console.log(jwtPayload.expires)
   if (Date.now() > jwtPayload.expires) {
     return done(StatusCodes.UNAUTHORIZED, null, 'Token expired')
   }
