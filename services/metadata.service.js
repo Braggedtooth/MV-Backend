@@ -1,11 +1,11 @@
 const { date } = require('zod')
 const db = require('../db')
-const metaDataService = () => {
+const MetaDataService = () => {
   /**
-  *
-  * @param {*} companyId
-  * @returns  Count of reviews in a company collection
-  */
+   *
+   * @param {string} companyId
+   * @returns  Count of reviews in a company collection
+   */
   const getTotalAmountOfReviews = async (companyId) => {
     const company = db.company.findFirst({ where: { id: companyId } })
     let amountOfviews = 0
@@ -14,7 +14,6 @@ const metaDataService = () => {
         where: {
           realtorsId: agent.id
         }
-
       })
       return amountOfviews++
     })
@@ -22,8 +21,8 @@ const metaDataService = () => {
   }
   /**
    *
-   * @param {*} companyId
-   * @returns adds ammount of reviews to company collections
+   * @param {string} companyId
+   * @returns adds amount of reviews to company collections
    */
   const addReviewCount = async (companyId) => {
     const TotalReviews = getTotalAmountOfReviews(companyId)
@@ -43,6 +42,11 @@ const metaDataService = () => {
     addReviewCount
   }
 }
+/**
+ *
+ * @param {string} realtorId
+ * @returns Aggregates a realtors average rating
+ */
 const realtorAverageRating = async (realtorId) => {
   const realtor = await db.realtors.aggregate({
     _avg: {
@@ -53,12 +57,11 @@ const realtorAverageRating = async (realtorId) => {
     where: {
       id: realtorId
     }
-  }
-  )
+  })
 
   return realtor
 }
 module.exports = {
-  metaDataService,
+  MetaDataService,
   realtorAverageRating
 }

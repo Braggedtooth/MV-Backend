@@ -1,8 +1,12 @@
-const { metaDataService } = require('./../services/metadata.service')
 const { StatusCodes } = require('http-status-codes')
 const db = require('../db')
 
-
+/**
+ *
+ * @param {*} req express req object
+ * @param {*} res express res object
+ * @returns create new review
+ */
 const createReview = async (req, res) => {
   const { title, content, realtorsId, rating } = req.body
   if (!title || !content) {
@@ -10,7 +14,6 @@ const createReview = async (req, res) => {
       .status(StatusCodes.BAD_REQUEST)
       .send({ error: 'Title and content of a review must be provided' })
   }
-  /*  const { addReviewCount } = metaDataService(); */
   const titleExists = await db.review.findFirst({
     where: { title: { equals: title }, realtorsId: { equals: realtorsId } }
   })
@@ -41,13 +44,16 @@ const createReview = async (req, res) => {
       rating
     }
   })
-  /* .then(() => addReviewCount(validRealtor.companyId)); */
-
   return res
     .status(StatusCodes.CREATED)
     .json({ message: 'Review Created Sucessfully', data: review })
 }
-
+/**
+ *
+ * @param {*} req express req object
+ * @param {*} res express res object
+ * @returns Updates a review
+ */
 const updateReview = async (req, res) => {
   try {
     const { title, content, id } = req.body
@@ -88,13 +94,17 @@ const updateReview = async (req, res) => {
     })
   }
 }
-
+/**
+ *
+ * @param {*} req express req object
+ * @param {*} res express res object
+ * @returns Deletes a review
+ */
 const deleteReview = async (req, res) => {
   const id = req.query.id || req.body.id
   const isUserReview = await db.review.findFirst({
     where: {
       authorId: req.user.id
-
     }
   })
   if (!isUserReview) {
@@ -109,20 +119,24 @@ const deleteReview = async (req, res) => {
 
   await db.review.delete({
     where: { id: id }
-
   })
   return res.status(StatusCodes.OK).json({
     message: 'Review and related comments have been deleted'
   })
 }
-
+/**
+ *
+ * @param {*} req express req object
+ * @param {*} res express res object
+ * @returns Gets all loggedin user reviews
+ */
 const allReviewsByUser = async (req, res) => {
   const reviews = await db.review.findMany({
+    orderBy: {
+      likes: 'asc'
+    },
     where: {
-      authorId: {
-        equals: req.user.id
-      }
-
+      authorId: req.user.id
     },
     include: {
       comments: true
@@ -133,11 +147,18 @@ const allReviewsByUser = async (req, res) => {
     data: reviews
   })
 }
-
+/**
+ *
+ * @param {*} req express req object
+ * @param {*} res express res object
+ * @returns Gets a review by id
+ */
 const reviewById = async (req, res) => {
   const id = req.query.id
   if (!id) {
-    return res.status(StatusCodes.NOT_FOUND).json({ message: 'Invalid review id' })
+    return res
+      .status(StatusCodes.NOT_FOUND)
+      .json({ message: 'Invalid review id' })
   }
 
   const review = await db.review.findUnique({
@@ -145,19 +166,33 @@ const reviewById = async (req, res) => {
       id: id
     },
     include: {
-      comments: true,
+      comments: true
     }
   })
+  if (!review.published) {
+    return res.status(StatusCodes.FORBIDDEN).json({
+      error: 'This review is not published'
+    })
+  }
   return res.status(StatusCodes.OK).json({
     message: 'Review and related comments ',
-    data:review
+    data: review
   })
 }
 
+/**
+ *
+ * @param {*} req express req object
+ * @param {*} res express res object
+ * @returns gets all published reviews
+ */
 const allReviews = async (req, res) => {
   const reviews = await db.review.findMany({
     where: {
       published: true
+    },
+    orderBy: {
+      likes: 'asc'
     }
   })
   return res.status(StatusCodes.OK).json({
@@ -165,6 +200,12 @@ const allReviews = async (req, res) => {
     data: reviews
   })
 }
+/**
+ *
+ * @param {*} req  express req object
+ * @param {*} res express res object
+ * @returns Toggles publication status of a review
+ */
 const togglePublish = async (req, res) => {
   const id = req.query.id || req.body.id
   const review = await db.review.findFirst({
@@ -193,6 +234,12 @@ const togglePublish = async (req, res) => {
       : 'Your review has been concealed'
   })
 }
+/**
+ *
+ * @param {*} req express req object
+ * @param {*} res express res object
+ * @returns Gets all reviews of a realtor
+ */
 
 const reviewsByRealtorsId = async (req, res) => {
   const realtorId = req.query.realtorId
@@ -207,8 +254,16 @@ const reviewsByRealtorsId = async (req, res) => {
     }
   })
   const reviews = await db.review.findMany({
+    orderBy: {
+      likes: 'asc'
+    },
     where: {
-      realtorsId: realtorId
+      AND: [
+        {
+          realtorsId: realtorId,
+          published: true
+        }
+      ]
     },
     include: {
       comments: true
@@ -228,5 +283,4 @@ module.exports = {
   allReviews,
   reviewsByRealtorsId,
   togglePublish
-
 }

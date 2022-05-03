@@ -1,6 +1,7 @@
 const { comparePasswords } = require('../utils/password')
 const { StatusCodes } = require('http-status-codes')
 const db = require('../db')
+
 exports.login = () => {
   return async (req, res, next) => {
     try {

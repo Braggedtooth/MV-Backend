@@ -1,7 +1,7 @@
 const { StatusCodes } = require('http-status-codes')
 const db = require('../db')
 const sendEmail = require('../services/mailer')
-const { verifyHtml, resendHtml } = require('../services/templates')
+const Templates = require('../services/templates')
 const generateToken = require('../utils/generateToken')
 
 const signin = async (req, res) => {
@@ -108,7 +108,11 @@ const signup = async (req, res) => {
       sendEmail({
         to: existingUser.email,
         subject: 'Ny verifications länk',
-        html: resendHtml(existingUser.firstname, existingUser.lastname, code.id)
+        html: Templates.resendHtml(
+          existingUser.firstname,
+          existingUser.lastname,
+          code.id
+        )
       })
       return res
         .status(StatusCodes.OK)
@@ -135,7 +139,7 @@ const signup = async (req, res) => {
   sendEmail({
     to: user.email,
     subject: 'Verifiera ditt konto',
-    html: verifyHtml(user.firstname, user.lastname, code.id)
+    html: Templates.verifyHtml(user.firstname, user.lastname, code.id)
   })
 
   return res.json({ message: 'Verification link sent to email' })
