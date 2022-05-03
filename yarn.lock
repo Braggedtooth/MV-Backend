@@ -63,22 +63,22 @@
     semver "^7.3.5"
     tar "^6.1.11"
 
-"@prisma/client@^3.12.0":
-  version "3.12.0"
-  resolved "https://registry.yarnpkg.com/@prisma/client/-/client-3.12.0.tgz#a0eb49ffea5c128dd11dffb896d7139a60073d12"
-  integrity sha512-4NEQjUcWja/NVBvfuDFscWSk1/rXg3+wj+TSkqXCb1tKlx/bsUE00rxsvOvGg7VZ6lw1JFpGkwjwmsOIc4zvQw==
+"@prisma/client@^3.13.0":
+  version "3.13.0"
+  resolved "https://registry.yarnpkg.com/@prisma/client/-/client-3.13.0.tgz#84511ebdf6ba75f77ca08495b9f73f22c4255654"
+  integrity sha512-lnEA2tTyVbO5mS1ehmHJQKBDiKB8shaR6s3azwj3Azfi5XHIfnqmkolLCvUeFYnkDCNVzGXJpUgKwQt/UOOYVQ==
   dependencies:
-    "@prisma/engines-version" "3.12.0-37.22b822189f46ef0dc5c5b503368d1bee01213980"
+    "@prisma/engines-version" "3.13.0-17.efdf9b1183dddfd4258cd181a72125755215ab7b"
 
-"@prisma/engines-version@3.12.0-37.22b822189f46ef0dc5c5b503368d1bee01213980":
-  version "3.12.0-37.22b822189f46ef0dc5c5b503368d1bee01213980"
-  resolved "https://registry.yarnpkg.com/@prisma/engines-version/-/engines-version-3.12.0-37.22b822189f46ef0dc5c5b503368d1bee01213980.tgz#829ca3d9d0d92555f44644606d4edfd45b2f5886"
-  integrity sha512-o+jo8d7ZEiVpcpNWUDh3fj2uPQpBxl79XE9ih9nkogJbhw6P33274SHnqheedZ7PyvPIK/mvU8MLNYgetgXPYw==
+"@prisma/engines-version@3.13.0-17.efdf9b1183dddfd4258cd181a72125755215ab7b":
+  version "3.13.0-17.efdf9b1183dddfd4258cd181a72125755215ab7b"
+  resolved "https://registry.yarnpkg.com/@prisma/engines-version/-/engines-version-3.13.0-17.efdf9b1183dddfd4258cd181a72125755215ab7b.tgz#676aca309d66d9be2aad8911ca31f1ee5561041c"
+  integrity sha512-TGp9rvgJIKo8NgvAHSwOosbut9mTA7VC6/rpQI9gh+ySSRjdQFhbGyNUiOcQrlI9Ob2DWeO7y4HEnhdKxYiECg==
 
-"@prisma/engines@3.12.0-37.22b822189f46ef0dc5c5b503368d1bee01213980":
-  version "3.12.0-37.22b822189f46ef0dc5c5b503368d1bee01213980"
-  resolved "https://registry.yarnpkg.com/@prisma/engines/-/engines-3.12.0-37.22b822189f46ef0dc5c5b503368d1bee01213980.tgz#e52e364084c4d05278f62768047b788665e64a45"
-  integrity sha512-zULjkN8yhzS7B3yeEz4aIym4E2w1ChrV12i14pht3ePFufvsAvBSoZ+tuXMvfSoNTgBS5E4bolRzLbMmbwkkMQ==
+"@prisma/engines@3.13.0-17.efdf9b1183dddfd4258cd181a72125755215ab7b":
+  version "3.13.0-17.efdf9b1183dddfd4258cd181a72125755215ab7b"
+  resolved "https://registry.yarnpkg.com/@prisma/engines/-/engines-3.13.0-17.efdf9b1183dddfd4258cd181a72125755215ab7b.tgz#d3a457cec4ef7a3b3412c45b1f2eac68c974474b"
+  integrity sha512-Ip9CcCeUocH61eXu4BUGpvl5KleQyhcUVLpWCv+0ZmDv44bFaDpREqjGHHdRupvPN/ugB6gTlD9b9ewdj02yVA==
 
 "@sindresorhus/is@^0.14.0":
   version "0.14.0"
@@ -249,6 +249,13 @@ balanced-match@^1.0.0:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/balanced-match/-/balanced-match-1.0.2.tgz#e83e3a7e3f300b34cb9d87f615fa0cbf357690ee"
   integrity sha512-3oSeUO0TMV67hN1AmbXsK4yaqU7tjiHlbxRDZOpH0KW9+CeX4bRAaX0Anxt0tx2MrpRpWwQaPwIlISEJhYU5Pw==
+
+basic-auth@~2.0.1:
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/basic-auth/-/basic-auth-2.0.1.tgz#b998279bf47ce38344b4f3cf916d4679bbf51e3a"
+  integrity sha512-NF+epuEdnUYVlGuhaxbbq+dvJttwLnGY+YixlXlME5KpQ5W3CnXA5cVTneY3SPbPDRkcjMbifrwmFYcClgOZeg==
+  dependencies:
+    safe-buffer "5.1.2"
 
 bcrypt@^5.0.1:
   version "5.0.1"
@@ -614,7 +621,7 @@ delegates@^1.0.0:
   resolved "https://registry.yarnpkg.com/delegates/-/delegates-1.0.0.tgz#84c6e159b81904fdca59a0ef44cd870d31250f9a"
   integrity sha1-hMbhWbgZBP3KWaDvRM2HDTElD5o=
 
-depd@2.0.0:
+depd@2.0.0, depd@~2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/depd/-/depd-2.0.0.tgz#b696163cc757560d09cf22cc8fad1571b79e76df"
   integrity sha512-g7nH6P6dyDioJogAAGprGpCtVImJhpPk/roCzdb3fIh61/s/nPsfR6onyMwkCAR/OlC3yBC0lESvUoQEAssIrw==
@@ -1838,6 +1845,17 @@ mkdirp@^1.0.3:
   resolved "https://registry.yarnpkg.com/mkdirp/-/mkdirp-1.0.4.tgz#3eb5ed62622756d79a5f0e2a221dfebad75c2f7e"
   integrity sha512-vVqVZQyf3WLx2Shd0qJ9xuvqgAyKPLAiqITEtqW0oIUjzo3PePDd6fW9iFz30ef7Ysp/oiWqbhszeGWW2T6Gzw==
 
+morgan@^1.10.0:
+  version "1.10.0"
+  resolved "https://registry.yarnpkg.com/morgan/-/morgan-1.10.0.tgz#091778abc1fc47cd3509824653dae1faab6b17d7"
+  integrity sha512-AbegBVI4sh6El+1gNwvD5YIck7nSA36weD7xvIxG4in80j/UoK8AEGaWnnz8v1GxonMCltmlNs5ZKbGvl9b1XQ==
+  dependencies:
+    basic-auth "~2.0.1"
+    debug "2.6.9"
+    depd "~2.0.0"
+    on-finished "~2.3.0"
+    on-headers "~1.0.2"
+
 ms@2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/ms/-/ms-2.0.0.tgz#5608aeadfc00be6c2901df5f9861788de0d597c8"
@@ -1874,6 +1892,11 @@ node-fetch@^2.6.7:
   integrity sha512-ZjMPFEfVx5j+y2yF35Kzx5sF7kDzxuDj6ziH4FFbOp87zKDZNx8yExJIb05OGF4Nlt9IHFIMBkRl41VdvcNdbQ==
   dependencies:
     whatwg-url "^5.0.0"
+
+nodemailer@^6.7.4:
+  version "6.7.4"
+  resolved "https://registry.yarnpkg.com/nodemailer/-/nodemailer-6.7.4.tgz#28771bda3dda8f2dad1912aca0f8727ce7f09d89"
+  integrity sha512-TBSS3qS8WG45ycUwEvEA/3UM1o3sLz9jUl4TPUKPz4ImWWM6UgRCb5pLO+HOouDKEj57yNLOrzQlO8+9IjWZoA==
 
 nodemon@^2.0.15:
   version "2.0.15"
@@ -2211,12 +2234,13 @@ prepend-http@^2.0.0:
   resolved "https://registry.yarnpkg.com/prepend-http/-/prepend-http-2.0.0.tgz#e92434bfa5ea8c19f41cdfd401d741a3c819d897"
   integrity sha1-6SQ0v6XqjBn0HN/UAddBo8gZ2Jc=
 
-prisma@^3.12.0:
-  version "3.12.0"
-  resolved "https://registry.yarnpkg.com/prisma/-/prisma-3.12.0.tgz#9675e0e72407122759d3eadcb6d27cdccd3497bd"
-  integrity sha512-ltCMZAx1i0i9xuPM692Srj8McC665h6E5RqJom999sjtVSccHSD8Z+HSdBN2183h9PJKvC5dapkn78dd0NWMBg==
+prisma@^3.13.0:
+  version "3.13.0"
+  resolved "https://registry.yarnpkg.com/prisma/-/prisma-3.13.0.tgz#b11edd5631222ff1bf1d5324732d47801386aa8c"
+  integrity sha512-oO1auBnBtieGdiN+57IgsA9Vr7Sy4HkILi1KSaUG4mpKfEbnkTGnLOxAqjLed+K2nsG/GtE1tJBtB7JxN1a78Q==
   dependencies:
-    "@prisma/engines" "3.12.0-37.22b822189f46ef0dc5c5b503368d1bee01213980"
+    "@prisma/engines" "3.13.0-17.efdf9b1183dddfd4258cd181a72125755215ab7b"
+    ts-pattern "^4.0.1"
 
 progress@^2.0.0:
   version "2.0.3"
@@ -2739,6 +2763,11 @@ tr46@~0.0.3:
   version "0.0.3"
   resolved "https://registry.yarnpkg.com/tr46/-/tr46-0.0.3.tgz#8184fd347dac9cdc185992f3a6622e14b9d9ab6a"
   integrity sha1-gYT9NH2snNwYWZLzpmIuFLnZq2o=
+
+ts-pattern@^4.0.1:
+  version "4.0.2"
+  resolved "https://registry.yarnpkg.com/ts-pattern/-/ts-pattern-4.0.2.tgz#b36afdb2de1ec0224539dcb7cea3a57c41453b9f"
+  integrity sha512-eHqR/7A6fcw05vCOfnL6RwgGJbVi9G/YHTdYdjYmElhDdJ1SMn7pWs+6+YuxygaFwQS/g+cIDlu+UD8IVpur1A==
 
 tsconfig-paths@^3.11.0:
   version "3.14.1"

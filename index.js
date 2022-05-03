@@ -10,10 +10,12 @@ const helmet = require('helmet')
 const passport = require('passport')
 const cookieParser = require('cookie-parser')
 const { cookieSecret } = require('./config')
-
+const morgan = require('morgan')
+const logger = morgan('dev')
 app.use(helmet())
 app.use(compression())
 app.use(express.json())
+app.use(logger)
 app.use(cookieParser(cookieSecret))
 app.use(express.urlencoded({ extended: true }))
 app.use(cors({
