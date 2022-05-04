@@ -15,5 +15,5 @@ router.delete('/delete', async (req, res) => {
 router.get('/review', async (req, res) => { reviewById(req, res) })
 router.get('/realtor', async (req, res) => { reviewsByRealtorsId(req, res) })
 router.get('/all', async (req, res) => { allReviews(req, res) })
-
+router.delete('/delete', deleteReview)
 module.exports = router

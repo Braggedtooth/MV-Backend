@@ -1,6 +1,125 @@
 const { StatusCodes } = require('http-status-codes')
 const db = require('../db')
 
+
+
+/**
+ *
+ * @param {*} req express req object
+ * @param {*} res express res object
+ * @returns Gets a review by id
+ */
+ const reviewById = async (req, res) => {
+  const id = req.query.id
+  if (!id) {
+    return res
+      .status(StatusCodes.NOT_FOUND)
+      .json({ message: 'Invalid review id' })
+  }
+
+  const review = await db.review.findUnique({
+    where: {
+      id: id
+    },
+    include: {
+      comments: true
+    }
+  })
+  if (!review.published) {
+    return res.status(StatusCodes.FORBIDDEN).json({
+      error: 'This review is not published'
+    })
+  }
+  return res.status(StatusCodes.OK).json({
+    message: 'Review and related comments ',
+    data: review
+  })
+}
+/**
+ *
+ * @param {*} req express req object
+ * @param {*} res express res object
+ * @returns Gets all reviews of a realtor
+ */
+
+ const reviewsByRealtorsId = async (req, res) => {
+  const realtorId = req.query.realtorId
+  if (!realtorId) {
+    return res
+      .status(StatusCodes.NOT_FOUND)
+      .json({ error: 'Invalid realtors id' })
+  }
+  const realtor = await db.realtors.findUnique({
+    where: {
+      id: realtorId
+    }
+  })
+  const reviews = await db.review.findMany({
+    orderBy: {
+      title: 'asc'
+    },
+    where: {
+      AND: [
+        {
+          realtorsId: realtorId,
+          published: true
+        }
+      ]
+    },
+    include: {
+      comments: true
+    }
+  })
+  return res.status(StatusCodes.OK).json({
+    message: 'Realtors reviews and related comments ',
+    data: { realtor, reviews }
+  })
+}
+
+/**
+ *
+ * @param {*} req express req object
+ * @param {*} res express res object
+ * @returns gets all published reviews
+ */
+ const allReviews = async (req, res) => {
+  const reviews = await db.review.findMany({
+    where: {
+      published: true
+    },
+    orderBy: {
+      title: 'asc'
+    }
+  })
+  return res.status(StatusCodes.OK).json({
+    message: 'Reviews ',
+    data: reviews
+  })
+}
+/**
+ *
+ * @param {*} req express req object
+ * @param {*} res express res object
+ * @returns Gets all loggedin user reviews
+ */
+const allReviewsByUser = async (req, res) => {
+  const reviews = await db.review.findMany({
+    orderBy: {
+      title: 'asc'
+    },
+    where: {
+      authorId: req.user.id
+    },
+    include: {
+      comments: true
+    }
+  })
+  return res.status(StatusCodes.OK).json({
+    message: 'Reviews and related comments ',
+    data: reviews
+  })
+}
+
 /**
  *
  * @param {*} req express req object
@@ -124,82 +243,9 @@ const deleteReview = async (req, res) => {
     message: 'Review and related comments have been deleted'
   })
 }
-/**
- *
- * @param {*} req express req object
- * @param {*} res express res object
- * @returns Gets all loggedin user reviews
- */
-const allReviewsByUser = async (req, res) => {
-  const reviews = await db.review.findMany({
-    orderBy: {
-      likes: 'asc'
-    },
-    where: {
-      authorId: req.user.id
-    },
-    include: {
-      comments: true
-    }
-  })
-  return res.status(StatusCodes.OK).json({
-    message: 'Reviews and related comments ',
-    data: reviews
-  })
-}
-/**
- *
- * @param {*} req express req object
- * @param {*} res express res object
- * @returns Gets a review by id
- */
-const reviewById = async (req, res) => {
-  const id = req.query.id
-  if (!id) {
-    return res
-      .status(StatusCodes.NOT_FOUND)
-      .json({ message: 'Invalid review id' })
-  }
 
-  const review = await db.review.findUnique({
-    where: {
-      id: id
-    },
-    include: {
-      comments: true
-    }
-  })
-  if (!review.published) {
-    return res.status(StatusCodes.FORBIDDEN).json({
-      error: 'This review is not published'
-    })
-  }
-  return res.status(StatusCodes.OK).json({
-    message: 'Review and related comments ',
-    data: review
-  })
-}
 
-/**
- *
- * @param {*} req express req object
- * @param {*} res express res object
- * @returns gets all published reviews
- */
-const allReviews = async (req, res) => {
-  const reviews = await db.review.findMany({
-    where: {
-      published: true
-    },
-    orderBy: {
-      likes: 'asc'
-    }
-  })
-  return res.status(StatusCodes.OK).json({
-    message: 'Reviews ',
-    data: reviews
-  })
-}
+
 /**
  *
  * @param {*} req  express req object
@@ -234,53 +280,14 @@ const togglePublish = async (req, res) => {
       : 'Your review has been concealed'
   })
 }
-/**
- *
- * @param {*} req express req object
- * @param {*} res express res object
- * @returns Gets all reviews of a realtor
- */
 
-const reviewsByRealtorsId = async (req, res) => {
-  const realtorId = req.query.realtorId
-  if (!realtorId) {
-    return res
-      .status(StatusCodes.NOT_FOUND)
-      .json({ error: 'Invalid realtors id' })
-  }
-  const realtor = await db.realtors.findUnique({
-    where: {
-      id: realtorId
-    }
-  })
-  const reviews = await db.review.findMany({
-    orderBy: {
-      likes: 'asc'
-    },
-    where: {
-      AND: [
-        {
-          realtorsId: realtorId,
-          published: true
-        }
-      ]
-    },
-    include: {
-      comments: true
-    }
-  })
-  return res.status(StatusCodes.OK).json({
-    message: 'Realtors reviews and related comments ',
-    data: { realtor, reviews }
-  })
-}
 module.exports = {
+  reviewById,
+  reviewsByRealtorsId,
+  allReviews,
+  allReviewsByUser,
   createReview,
   updateReview,
-  allReviewsByUser,
   deleteReview,
-  reviewById,
-  allReviews,
-  reviewsByRealtorsId,
   togglePublish
 }

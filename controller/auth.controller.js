@@ -46,6 +46,7 @@ const signin = async (req, res) => {
   if (user.status === 'PENDING') {
     return res.status(StatusCodes.OK).json({
       data: {
+        id: user.id,
         email: user.email,
         lastname: user.lastname,
         firstname: user.firstname,
@@ -59,6 +60,7 @@ const signin = async (req, res) => {
   if (user.status === 'ACTIVE') {
     res.status(StatusCodes.OK).json({
       data: {
+        id: user.id,
         email: user.email,
         lastname: user.lastname,
         firstname: user.firstname,

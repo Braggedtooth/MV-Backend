@@ -34,7 +34,6 @@ model Review {
   author     User?     @relation(fields: [authorId, authorName], references: [id, firstname], onDelete: Cascade, onUpdate: Cascade)
   authorId   String
   rating     Int       @default(0)
-  likes      Int       @default(0)
   authorName String?
   comments   Comment[]
   realtorsId String?   @db.ObjectId

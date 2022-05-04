@@ -3,18 +3,24 @@ const db = require('../db')
 const ProfanityService = require('../services/profanity.service')
 /**
  *
- * @param {[body:{content, reviewId}]} req express req object
+ * @param {[body:{content:string, reviewId:string}]} req express req object
  * @param {*} res express res object
  * @returns Creates new comment
  */
 const newComment = async (req, res) => {
   const { content, reviewId } = req.body
   const { id, firstname } = req.user
+
   const commentTosave = ProfanityService.clean(content)
   if (!content | !reviewId) {
     return res
       .status(StatusCodes.BAD_REQUEST)
       .json({ error: 'Missing comment content and review id' })
+  }
+  if (commentTosave.length < 5) {
+    return res
+      .status(StatusCodes.BAD_REQUEST)
+      .json({ error: 'Comment cant be less than 5 characters' })
   }
   const commentExists = await db.comment.findFirst({
     where: {
@@ -31,6 +37,22 @@ const newComment = async (req, res) => {
         .json({ error: 'No duplicate comments allowed' })
     }
   }
+  const amountOfComments = await db.review.findFirst({
+    where: {
+      id: reviewId
+    },
+    select: {
+      _count: {
+        select: { comments: true }
+      }
+    }
+  })
+  if (amountOfComments._count.comments > 20) {
+    return res
+      .status(StatusCodes.FORBIDDEN)
+      .json({ error: 'Cannot have more than 20 comments' })
+  }
+
   const comment = await db.comment.create({
     data: {
       authorId: id,
@@ -62,14 +84,16 @@ const deleteComment = async (req, res) => {
       .status(StatusCodes.BAD_REQUEST)
       .json({ error: 'Missing Comment Id' })
   }
-  const comment = await db.comment.findUnique({
+  const comment = await db.comment.findFirst({
     where: {
       id: id
     },
     select: { authorId: true }
   })
   if (!comment) {
-    res.status(StatusCodes.BAD_REQUEST).json({ error: 'Comment not found' })
+    return res
+      .status(StatusCodes.BAD_REQUEST)
+      .json({ error: 'Comment not found' })
   }
   if (comment.authorId !== req.user.id && req.user.role !== 'ADMIN') {
     return res
