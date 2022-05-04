@@ -97,7 +97,7 @@ const signup = async (req, res) => {
   if (existingUser) {
     if (existingUser.verified === true) {
       return res
-        .status(StatusCodes.CONFLICT)
+        .status(StatusCodes.FORBIDDEN)
         .json({ error: 'Email is already in use...' })
     }
     if (existingUser.OTP === null) {
@@ -120,7 +120,11 @@ const signup = async (req, res) => {
         .status(StatusCodes.OK)
         .json({ message: 'New verification link sent to email' })
     }
+    return res
+      .status(StatusCodes.FORBIDDEN)
+      .json({ error: 'Email is already in use... ' })
   }
+  
 
   const user = await db.user.create({
     data: {
